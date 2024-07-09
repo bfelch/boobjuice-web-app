@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/boobjuiceClient.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div>Manage TODO List</div>
+<div>
+	<ul>
+		<li>Add list of all entries</li>
+		<li>filter entries by 10/30/60/all days</li>
+		<li>delete entry button</li>
+		<li>edit entry button</li>
+		<li>manual record button</li>
+		<li>maybe - color code volume by percentile</li>
+	</ul>
+</div>
+
+<button type="button" onclick="boobjuiceClient.insert({volume:'123'});">Insert</button>
+<button type="button" onclick="boobjuiceClient.update('{}');">Update</button>
+<button type="button" onclick="boobjuiceClient.remove({});">Remove</button>
+
+{% for entry in entries %}
+	<div>{{entry}}</div>
+{% endfor %}
+{% endblock %}
