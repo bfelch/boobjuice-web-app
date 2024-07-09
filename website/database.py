@@ -1,44 +1,50 @@
-import time
+from datetime import datetime
 
 class Boobjuice:
 
 	PARAM_TIMESTAMP = 'timestamp'
-	PARAM_VOLUME = 'volume'
-	PARAM_SOURCE = 'source'
+	PARAM_MASS = 'mass'
 
 	def __init__(self):
 		pass
 
 	def get(self):
-		return ['entry1', 'entryA']
+		return [{'timestamp':self.get_js_timestamp('2024/07/08 09:44:36'), 'mass':'123'},
+		  {'timestamp':self.get_js_timestamp('2024/07/08 20:17:11'), 'mass':'108'}]
 
 	def insert(self, data):
-		self.validate_data('insert', data, [self.PARAM_VOLUME, self.PARAM_VOLUME])
+		self.validate_data('insert', data, [self.PARAM_MASS])
 
 		timestamp = data.get(self.PARAM_TIMESTAMP)
-		volume = data.get(self.PARAM_VOLUME)
-		source = data.get(self.PARAM_SOURCE)
+		mass = data.get(self.PARAM_MASS)
 
 		if timestamp is None:
-			timestamp = time.time()
+			timestamp = datetime.now()
+		else:
+			timestamp = datetime.fromtimestamp(timestamp / 1000)
 		
 		pass
 
 	def update(self, data):
-		self.validate_data('update', data, [self.PARAM_TIMESTAMP, self.PARAM_VOLUME, self.PARAM_SOURCE])
+		self.validate_data('update', data, [self.PARAM_TIMESTAMP, self.PARAM_MASS])
 
-		timestamp = data.get(self.PARAM_TIMESTAMP)
-		volume = data.get(self.PARAM_VOLUME)
-		source = data.get(self.PARAM_SOURCE)
+		timestamp = datetime.fromtimestamp(data.get(self.PARAM_TIMESTAMP))
+		mass = data.get(self.PARAM_MASS)
 		
 		pass
 
 	def delete(self, data):
 		self.validate_data('delete', data, [self.PARAM_TIMESTAMP])
 		
-		timestamp = data.get(self.PARAM_TIMESTAMP)
+		timestamp = datetime.fromtimestamp(data.get(self.PARAM_TIMESTAMP))
 		
 		pass
+
+	def get_js_timestamp(self, dbTimestamp):
+		# get datetime object from db timestamp
+		timestamp = datetime.strptime(dbTimestamp, '%Y/%m/%d %H:%M:%S')
+		# format datetime object to js format for datetime-local input
+		return timestamp.strftime('%Y-%m-%dT%H:%M:%S')
 
 	def validate_data(self, method, data, params=[]):
 		if data is None:
