@@ -1,1 +1,1 @@
-from .views import views
+from boobjuice.routes.views import views
