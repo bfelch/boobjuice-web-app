@@ -24,6 +24,10 @@ summary.setEntries = function(entries) {
 		}
 	});
 
+	this.resetFilters();
+}
+
+summary.resetFilters = function() {
 	this._initFilterRange();
 	this.updatePlot();
 }
