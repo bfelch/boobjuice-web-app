@@ -1,33 +1,22 @@
 {% extends "base.html" %}
 {% block scripts %}
 {{ super() }}
+<script type="text/javascript" src="{{ url_for('static', filename='js/utils/dateUtils.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/ui/entry.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/clients/clientBase.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/clients/boobjuiceClient.js') }}"></script>
 {% endblock %}
 
 {% block content %}
-<div>Manage TODO List</div>
-<div>
-	<ul>
-		<li>Add list of all entries</li>
-		<li>filter entries by 10/30/60/all days</li>
-		<li>delete entry button</li>
-		<li>edit entry button</li>
-		<li>manual record button</li>
-		<li>maybe - color code volume by percentile</li>
-	</ul>
+{% include "views/entryView.html" %}
+
+<div class="d-flex flex-row-reverse p-3 column-gap-3">
+	<button type="button" class="btn btn-primary" onclick="entry.show('Insert')">Manual Entry</button>
 </div>
 
-{% include "views/entry.html" %}
-
-<button type="button" class="btn btn-primary" onclick="entry.show('Update', {{entries[0]}})">Update Modal</button>
-<button type="button" class="btn btn-primary" onclick="entry.show('Insert')">Insert Modal</button>
-
-<button type="button" onclick="boobjuiceClient.insert({mass:'123'});">Insert</button>
-<button type="button" onclick="boobjuiceClient.update('{}');">Update</button>
-<button type="button" onclick="boobjuiceClient.remove({});">Remove</button>
-
-{% for entry in entries %}
-	<div>{{entry}}</div>
+<ul class="list-group">
+{% for item in entries %}
+	{% include "views/entryItemView.html" %}
 {% endfor %}
+</ul>
 {% endblock %}

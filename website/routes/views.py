@@ -1,7 +1,5 @@
-import json
-
-from flask import Blueprint, flash, redirect, render_template, request, url_for
-from .database import Boobjuice, IllegalArgumentError
+from flask import Blueprint, flash, render_template, request
+from ..persistence import Boobjuice, IllegalArgumentError
 
 views = Blueprint('views', __name__)
 
@@ -31,8 +29,10 @@ def record():
 	except IllegalArgumentError as e:
 		print(e.message)
 		flash(e.message, category='danger')
+		return e.message, 500
 	except Exception as e:
 		print('Something went wrong...', e)
 		flash('Something went wrong...', category='danger')
+		return 'Something went wrong...', 500
 	
-	return json.dumps('')
+	return '', 200

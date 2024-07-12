@@ -1,9 +1,7 @@
 let clientBase = {};
 
 clientBase.callService = function(url, method, data) {
-	console.log(data);
 	data = JSON.stringify(data);
-	console.log(data);
 	
 	return fetch(url, {
 		method: method,
@@ -11,10 +9,14 @@ clientBase.callService = function(url, method, data) {
 		body: data
 	})
 	.then(response => {
-		console.log('Success!');
+		if (response.status === 200) {
+			console.log('Service success!');
+		} else {
+			console.error('Service error!')
+		}
 		window.location.reload();
 	})
 	.catch((error) => {
-		console.error('Error', error);
+		console.error('Service error!', error);
 	});
 }

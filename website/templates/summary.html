@@ -1,15 +1,27 @@
 {% extends "base.html" %}
+{% block links %}
+{{ super() }}
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/utils/dateUtils.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/ui/summary.js') }}"></script>
+{% endblock %}
+
 {% block content %}
-<div>Summary TODO List</div>
-<div>
-	<ul>
-		<li>Add scatter plot with trend line (x:day/time, y:volume)</li>
-		<li>filter entries by 10/30/60/all days</li>
-		<li>maybe - filter entries by morning/afternoon/night/all</li>
-	</ul>
+<div id="scatterPlot"></div>
+
+<div class="input-group flex-row">
+	<span class="input-group-text col-2">Min Date</span>
+	<input type="date" class="form-control" id="plotMinPicker" onchange="summary.updatePlot()"/>
+</div>
+<div class="input-group flex-row">
+	<span class="input-group-text col-2">Max Date</span>
+	<input type="date" class="form-control" id="plotMaxPicker" onchange="summary.updatePlot()"/>
 </div>
 
-{% for entry in entries %}
-	<div>{{entry}}</div>
-{% endfor %}
+<script type="text/javascript">
+	summary.setEntries({{ entries|safe }});
+</script>
 {% endblock %}

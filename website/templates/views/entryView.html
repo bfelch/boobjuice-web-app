@@ -1,0 +1,24 @@
+<div class="modal fade" id="entryModal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Title</h5>
+				<button type="button" class="btn-close" aria-label="Close" onclick="entry.hide()"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label for="entryTimestamp" class="form-label">Timestamp</label>
+					<input type="datetime-local" step="1" class="form-control" name="entryTimestamp" onchange="entry.updateItemTimestamp()"/>
+				</div>
+				<div class="mb-3">
+					<label for="entryMass" class="form-label">Mass (g)</label>
+					<input type="number" class="form-control" name="entryMass" onchange="entry.updateItemMass()"/>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" onclick="entry.hide()">Cancel</button>
+				<button type="button" class="btn btn-primary" name="entrySubmit" onclick="entry.submit()">Save Changes</button>
+			</div>
+		</div>
+	</div>
+</div>
