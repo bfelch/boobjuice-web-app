@@ -1,5 +1,5 @@
 from flask import Blueprint, flash, render_template, request
-from ..persistence import Boobjuice, IllegalArgumentError
+from boobjuice.persistence import Boobjuice, IllegalArgumentError
 
 views = Blueprint('views', __name__)
 
