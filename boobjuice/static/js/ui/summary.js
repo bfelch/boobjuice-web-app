@@ -48,21 +48,38 @@ summary.plotEntries = function() {
 		y: values.data.y,
 		name: 'extractions',
 		mode: 'markers',
-		type: 'scatter'
+		type: 'scatter',
+		marker: {
+			color: 'rgb(255,127,14)'
+		}
 	};
 
 	let average = {
 		x: values.calculated.keys,
 		y: values.calculated.averages,
 		name: 'average',
-		type: 'line'
+		type: 'bar',
+		marker: {
+			color: 'rgba(31,119,180,0.2)',
+			line: {
+				color: 'rgb(31,119,180)',
+				width: 1.5
+			}
+		}
 	};
 
 	let total = {
 		x: values.calculated.keys,
 		y: values.calculated.totals,
 		name: 'total',
-		type: 'line'
+		type: 'bar',
+		marker: {
+			color: 'rgba(44,160,44,0.2)',
+			line: {
+				color: 'rgb(44,160,44)',
+				width: 1.5
+			}
+		}
 	};
 
 	let layout = {
@@ -74,7 +91,7 @@ summary.plotEntries = function() {
 	};
 
 	let plot = document.getElementById('scatterPlot');
-	Plotly.newPlot(plot, [data, average, total], layout);
+	Plotly.newPlot(plot, [average, total, data], layout);
 }
 
 summary.updatePlot = function() {

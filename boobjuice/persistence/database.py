@@ -1,4 +1,6 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+
+import random
 
 class Boobjuice:
 
@@ -9,13 +11,14 @@ class Boobjuice:
 		pass
 
 	def get(self):
-		return [{'timestamp':'2024/07/08 09:44:36', 'mass':'123'},
-		  {'timestamp':'2024/07/08 20:17:11', 'mass':'108'},
-		  {'timestamp':'2024/07/09 04:11:32', 'mass':'144'},
-		  {'timestamp':'2024/07/09 10:27:22', 'mass':'121'},
-		  {'timestamp':'2024/07/09 23:27:22', 'mass':'136'},
-		  {'timestamp':'2024/07/10 08:58:09', 'mass':'131'},
-		  {'timestamp':'2024/07/10 13:33:47', 'mass':'117'}]
+		return self._build_random_entries()
+		# return [{'timestamp':'2024/07/08 09:44:36', 'mass':'123'},
+		#   {'timestamp':'2024/07/08 20:17:11', 'mass':'108'},
+		#   {'timestamp':'2024/07/09 04:11:32', 'mass':'144'},
+		#   {'timestamp':'2024/07/09 10:27:22', 'mass':'121'},
+		#   {'timestamp':'2024/07/09 23:27:22', 'mass':'136'},
+		#   {'timestamp':'2024/07/10 08:58:09', 'mass':'131'},
+		#   {'timestamp':'2024/07/10 13:33:47', 'mass':'117'}]
 
 	def insert(self, data):
 		self.validate_data('insert', data, [self.PARAM_MASS])
@@ -67,6 +70,22 @@ class Boobjuice:
 			return datetime.strptime(timestamp, '%Y/%m/%d %H:%M:%S')
 		except ValueError:
 			raise IllegalArgumentError('invalid timestamp format')
+	
+	def _build_random_entries(self):
+		random.seed('1234')
+
+		start_date = datetime.today()
+		entries = []
+		for i in range(40):
+			entries.append(self._build_random_entry(start_date))
+		
+		return sorted(entries, key=lambda _e: _e.get('timestamp'))
+
+	def _build_random_entry(self, start_date):
+		timestamp = start_date - timedelta(minutes=random.randrange(21600))
+		mass = 50 + random.randrange(300)
+
+		return {'timestamp':timestamp.strftime('%Y-%m-%d %H:%M:%S'), 'mass':mass}
 
 class IllegalArgumentError(Exception):
 	def __init__(self, message='argument is not valid'):
