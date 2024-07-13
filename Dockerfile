@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookwork as mysqlclient-build
+FROM python:3.12-slim-bookworm as mysqlclient-build
 RUN curl -LsS https://r.mariadb.com/downloads/mariadb_repo_setup | bash 
 RUN apt-get update
 RUN apt-get install -y mariadb-client libmariadb-dev-compat libmariadb-dev
