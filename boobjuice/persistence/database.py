@@ -1,11 +1,36 @@
 from datetime import datetime, timedelta
 
+import os
+import mariadb
 import random
+
+def get_connection():
+	database = os.environ['MARIA_DATABASE']
+	username = os.environ['MARIA_USERNAME']
+	password = os.environ['MARIA_PASSWORD']
+	host = os.environ['MARIA_HOST']
+	port = os.environ['MARIA_PORT']
+
+	try:
+		conn = mariadb.connect(
+			user=username,
+			password=password,
+			host=host,
+			port=port,
+			database=database
+		)
+	except mariadb.Error as e:
+		print('Error connecting to MariaDB platform: ', e)
+		raise DataAccessError(e)
+
+	return conn.cursor()
 
 class Boobjuice:
 
 	PARAM_TIMESTAMP = 'timestamp'
 	PARAM_MASS = 'mass'
+
+	TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M'
 
 	def __init__(self):
 		pass
@@ -27,8 +52,10 @@ class Boobjuice:
 		mass = data.get(self.PARAM_MASS)
 
 		if timestamp is None:
-			timestamp = datetime.now()
+			timestamp = datetime.now().strftime(self.TIMESTAMP_FORMAT)
 		
+		cursor = get_connection()
+
 		print('inserting', data)
 		pass
 
@@ -38,6 +65,8 @@ class Boobjuice:
 		timestamp = self.get_timestamp(data)
 		mass = data.get(self.PARAM_MASS)
 		
+		cursor = get_connection()
+
 		print('updating...', data)
 		pass
 
@@ -45,6 +74,8 @@ class Boobjuice:
 		self.validate_data('delete', data, [self.PARAM_TIMESTAMP])
 		
 		timestamp = self.get_timestamp(data)
+		
+		cursor = get_connection()
 		
 		print('deleting...', data)
 		pass
@@ -67,8 +98,9 @@ class Boobjuice:
 			raise IllegalArgumentError('timestamp is required')
 		
 		try:
-			return datetime.strptime(timestamp, '%Y/%m/%d %H:%M:%S')
+			return datetime.strptime(timestamp, self.TIMESTAMP_FORMAT)
 		except ValueError:
+			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')
 	
 	def _build_random_entries(self):
@@ -85,7 +117,11 @@ class Boobjuice:
 		timestamp = start_date - timedelta(minutes=random.randrange(21600))
 		mass = 50 + random.randrange(300)
 
-		return {'timestamp':timestamp.strftime('%Y-%m-%d %H:%M:%S'), 'mass':mass}
+		return {'timestamp':timestamp.strftime('%Y-%m-%d %H:%M'), 'mass':mass}
+
+class DataAccessError(Exception):
+	def __init__(self, message='failed to connect to database'):
+		self.message = message
 
 class IllegalArgumentError(Exception):
 	def __init__(self, message='argument is not valid'):

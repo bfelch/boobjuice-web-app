@@ -73,8 +73,8 @@ entry.updateItemTimestamp = function() {
 	this._initCurrentItem();
 
 	let timeInput = this.getTimeInput();
-	this.currentItem['timestamp'] = dateUtils.formatTimestamp(timeInput.value, dateUtils.ISO_STD, true, '/');
-	console.log('changed timestamp...', this.currentItem);
+	this.currentItem['timestamp'] = dateUtils.formatTimestamp(timeInput.value, dateUtils.ISO_STD);
+	// console.log('changed timestamp...', this.currentItem);
 }
 
 entry.updateItemMass = function() {
@@ -82,7 +82,7 @@ entry.updateItemMass = function() {
 
 	let massInput = this.getMassInput();
 	this.currentItem['mass'] = massInput.value;
-	console.log('changed mass...', this.currentItem);
+	// console.log('changed mass...', this.currentItem);
 }
 
 entry.getTimeInput = function() {
@@ -98,8 +98,46 @@ entry.getSubmitButton = function() {
 }
 
 entry.submit = function() {
+	if (!this.validate()) {
+		return;
+	}
+
 	this.submitCallback();
 	this.hide();
+}
+
+entry.validate = function() {
+	if (!this.currentItem) {
+		return this.handleError('entry item is undefined');
+	}
+
+	if (!this.currentItem.mass) {
+		return this.handleError('entry mass is undefined');
+	}
+
+	return true;
+}
+
+entry.handleError = function(message, category='danger') {
+	let container = document.getElementById('entryAlertContainer');
+	container.innerHTML = '';
+
+	let alert = document.createElement('div');
+	let alertMessage = document.createTextNode(message);
+	let alertButton = document.createElement('button');
+
+	alert.appendChild(alertMessage);
+	alert.appendChild(alertButton);
+
+	alert.classList.add('alert', `alert-${category}`, 'alert-dismissible', 'fade', 'show');
+	alert.role = 'alert';
+	
+	alertButton.type = 'button';
+	alertButton.classList.add('btn-close');
+	alertButton.setAttribute('data-bs-dismiss', 'alert');
+	alertButton.ariaLabel = 'Close';
+
+	container.appendChild(alert);
 }
 
 entry.insert = function() {
