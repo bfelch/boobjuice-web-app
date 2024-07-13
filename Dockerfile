@@ -2,7 +2,7 @@ FROM python:3.12-slim-bookworm
 WORKDIR /app
 
 RUN apt-get update
-RUN apt-get install libmariadb3 libmariadb-dev
+RUN apt-get install -y libmariadb3 libmariadb-dev
 
 COPY ./requirements.txt /app
 RUN pip install --upgrade pip
