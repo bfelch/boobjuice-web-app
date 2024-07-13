@@ -46,7 +46,7 @@ summary.plotEntries = function() {
 	let data = {
 		x: values.data.x,
 		y: values.data.y,
-		name: 'extractions',
+		name: 'pumps',
 		mode: 'markers',
 		type: 'scatter',
 		marker: {
