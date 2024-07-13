@@ -1,7 +1,8 @@
-FROM python:3.12
+FROM python:3.12-slim-bookworm
 WORKDIR /app
 
 RUN apt-get update
+RUN apt-get install -y gcc
 RUN apt-get install -y libmariadb3 libmariadb-dev
 
 COPY ./requirements.txt /app
