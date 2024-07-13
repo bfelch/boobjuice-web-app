@@ -11,6 +11,8 @@ def get_connection():
 	host = os.environ['MARIA_HOST']
 	port = os.environ['MARIA_PORT']
 
+	print('maria variables: ', database, username, password, host, port)
+	
 	try:
 		conn = mariadb.connect(
 			user=username,
@@ -76,7 +78,7 @@ class Boobjuice:
 		timestamp = self.get_timestamp(data)
 		
 		cursor = get_connection()
-		
+
 		print('deleting...', data)
 		pass
 
