@@ -1,4 +1,4 @@
-FROM alpine:3.20.1
+FROM python:3.12-slim-bookworm
 WORKDIR /app
 
 # install dependencies for mariadb
