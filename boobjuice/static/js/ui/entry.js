@@ -6,10 +6,10 @@ entry.submitCallback = undefined;
 entry.MODE = {
 	INSERT: 0,
 	UPDATE: 1,
-	DELETE:2
+	DELETE: 2
 };
 
-entry.show = function(title, item, mode=this.MODE.INSERT) {
+entry.show = function(mode, item) {
 	if (this.modal === undefined) {
 		this.modal = new bootstrap.Modal('#entryModal', {
 			focus: true
@@ -18,6 +18,18 @@ entry.show = function(title, item, mode=this.MODE.INSERT) {
 
 	let modal = document.getElementById('entryModal');
 	let titleTag = modal.getElementsByClassName('modal-title')[0];
+	let title = 'Title Placeholder';
+	switch (mode) {
+		case this.MODE.INSERT:
+			title = 'Insert';
+			break;
+		case this.MODE.UPDATE:
+			title = 'Update';
+			break;
+		case this.MODE.DELETE:
+			title = 'Want to delete?';
+			break;
+	}
 	titleTag.textContent = title;
 
 	this._initModal(mode);
