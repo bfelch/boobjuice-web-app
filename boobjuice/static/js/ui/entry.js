@@ -54,8 +54,8 @@ entry.hide = function() {
 entry._initModal = function(mode) {
 	this.getTimeInput().readOnly = mode >= this.MODE.UPDATE;
 	this.getTimeInput().disabled = mode >= this.MODE.UPDATE;
-	this.getMassInput().readOnly = mode >= this.MODE.INSERT;
-	this.getMassInput().disabled = mode >= this.MODE.INSERT;
+	this.getMassInput().readOnly = mode >= this.MODE.DELETE;
+	this.getMassInput().disabled = mode >= this.MODE.DELETE;
 
 	let submitButton = this.getSubmitButton();
 	if (mode >= this.MODE.DELETE) {
