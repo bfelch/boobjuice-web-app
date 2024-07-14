@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import os
+import logging
 import mariadb
 import random
 
@@ -11,8 +12,9 @@ def get_connection():
 	host = os.environ['MARIA_HOST']
 	port = os.environ['MARIA_PORT']
 
+	logging.info(f'maria variables: {database}, {username}, {password}, {host}, {port}')
 	print('maria variables: ', database, username, password, host, port)
-	
+
 	try:
 		conn = mariadb.connect(
 			user=username,

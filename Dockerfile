@@ -1,6 +1,7 @@
 FROM python:3.12-slim-bookworm
 WORKDIR /app
 
+# install dependencies for mariadb
 RUN apt-get update
 RUN apt-get install -y gcc
 RUN apt-get install -y libmariadb3 libmariadb-dev
