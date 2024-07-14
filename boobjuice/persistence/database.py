@@ -30,7 +30,8 @@ class Boobjuice:
 	PARAM_TIMESTAMP = 'timestamp'
 	PARAM_MASS = 'mass'
 
-	TIMESTAMP_FORMAT = '%Y-%m-%dT%H:%M'
+	ISO_STD = '%Y-%m-%d %H:%M'
+	ISO_8601 = '%Y-%m-%dT%H:%M'
 
 	def __init__(self):
 		pass
@@ -42,9 +43,9 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY U_EXTRACTED DESC;')
+			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY U_EXTRACTED ASC;')
 			for (timestamp, mass) in cur:
-				results.append({'timestamp':timestamp.strftime(self.TIMESTAMP_FORMAT), 'mass':mass})
+				results.append({'timestamp':timestamp.strftime(self.ISO_STD), 'mass':mass})
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error selecting from database: {e}')
 		finally:
@@ -61,7 +62,7 @@ class Boobjuice:
 		mass = data.get(self.PARAM_MASS)
 
 		if timestamp is None:
-			timestamp = datetime.now().strftime(self.TIMESTAMP_FORMAT)
+			timestamp = datetime.now().strftime(self.ISO_8601)
 		
 		conn = get_connection()
 
@@ -122,7 +123,7 @@ class Boobjuice:
 			raise IllegalArgumentError('timestamp is required')
 		
 		try:
-			return datetime.strptime(timestamp, self.TIMESTAMP_FORMAT)
+			return datetime.strptime(timestamp, self.ISO_8601)
 		except ValueError:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')

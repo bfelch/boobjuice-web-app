@@ -1,11 +1,12 @@
 let dateUtils = {};
+dateUtils.ISO_STD = 'YYYY-mm-dd HH:MM';
 dateUtils.ISO_8601 = 'YYYY-mm-ddTHH:MM';
 
 dateUtils.formatTimestamp = function(timestamp, format, includeTime=true, dateDelimiter='-', timeDelimiter=':') {
 	if (!timestamp) {
 		return undefined;
 	}
-	
+
 	if (timestamp instanceof String) {
 		timestamp = Date.parse(timestamp);
 	}

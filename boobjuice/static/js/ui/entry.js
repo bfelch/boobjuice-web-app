@@ -3,7 +3,13 @@ entry.modal = undefined;
 entry.currentItem = undefined;
 entry.submitCallback = undefined;
 
-entry.show = function(title, item, deleting=false) {
+entry.MODE = {
+	INSERT: 0,
+	UPDATE: 1,
+	DELETE:2
+};
+
+entry.show = function(title, item, mode=this.MODE.INSERT) {
 	if (this.modal === undefined) {
 		this.modal = new bootstrap.Modal('#entryModal', {
 			focus: true
@@ -14,7 +20,7 @@ entry.show = function(title, item, deleting=false) {
 	let titleTag = modal.getElementsByClassName('modal-title')[0];
 	titleTag.textContent = title;
 
-	this._initModal(deleting);
+	this._initModal(mode);
 
 	let timeTag = this.getTimeInput()
 	let massTag = this.getMassInput();
@@ -45,14 +51,14 @@ entry.hide = function() {
 	this.modal.hide();
 }
 
-entry._initModal = function(deleting) {
-	this.getTimeInput().readOnly = deleting;
-	this.getTimeInput().disabled = deleting;
-	this.getMassInput().readOnly = deleting;
-	this.getMassInput().disabled = deleting;
+entry._initModal = function(mode) {
+	this.getTimeInput().readOnly = mode >= this.MODE.UPDATE;
+	this.getTimeInput().disabled = mode >= this.MODE.UPDATE;
+	this.getMassInput().readOnly = mode >= this.MODE.INSERT;
+	this.getMassInput().disabled = mode >= this.MODE.INSERT;
 
 	let submitButton = this.getSubmitButton();
-	if (deleting) {
+	if (mode >= this.MODE.DELETE) {
 		submitButton.classList.remove('btn-primary');
 		submitButton.classList.add('btn-danger');
 		submitButton.innerHTML = 'DELETE';
