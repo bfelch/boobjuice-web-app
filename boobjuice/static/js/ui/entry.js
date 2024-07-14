@@ -35,7 +35,7 @@ entry.show = function(title, item, mode=this.MODE.INSERT) {
 		massTag.value = item.mass;
 
 		this.currentItem = item;
-		if (deleting) {
+		if (mode == this.MODE.DELETE) {
 			this.submitCallback = this.delete;
 		} else {
 			this.submitCallback = this.update;
