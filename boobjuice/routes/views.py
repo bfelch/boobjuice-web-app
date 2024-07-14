@@ -29,16 +29,19 @@ def record():
 				datastore.delete(data)
 		flash('Success!', category='success')
 	except DataAccessError as e:
-		logging.error(f'Data access error... {e.message}')
-		flash(e.message, category='danger')
-		return e.message, 500
+		message = 'Data access error...'
+		logging.error(f'{message} {e.message}')
+		flash(message, category='danger')
+		return message, 500
 	except IllegalArgumentError as e:
-		logging.error(f'Illegal argument error... {e.message}')
-		flash(e.message, category='danger')
-		return e.message, 500
+		message = 'Illegal argument error...'
+		logging.error(f'{message} {e.message}')
+		flash(message, category='danger')
+		return message, 500
 	except Exception as e:
-		logging.error(f'Something went wrong... {e}')
-		flash('Something went wrong...', category='danger')
-		return 'Something went wrong...', 500
+		message = 'Something went wrong...'
+		logging.error(f'{message} {e}')
+		flash(message, category='danger')
+		return message, 500
 	
 	return '', 200

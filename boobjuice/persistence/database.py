@@ -98,7 +98,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('DELETE FROM BOOBJUICE WHERE U_EXTRACTED = ?;', (timestamp))
+			cur.execute('DELETE FROM BOOBJUICE WHERE U_EXTRACTED = ?;', (timestamp,))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error deleting from database: {e}')
 		finally:
