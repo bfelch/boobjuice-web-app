@@ -9,15 +9,16 @@ def get_connection():
 	database = os.environ['MARIA_DATABASE']
 	username = os.environ['MARIA_USERNAME']
 	password = os.environ['MARIA_PASSWORD']
+	host = os.environ['MARIA_HOST']
 	port = int(os.environ['MARIA_PORT'])
 
-	logging.info(f'maria variables: {database}, {username}, {password}, {port}')
+	logging.warn(f'maria variables: {database}, {username}, {password}, {host}, {port}')
 
 	try:
 		conn = mariadb.connect(
 			user=username,
 			password=password,
-			host='127.0.0.1',
+			host=host,
 			port=port,
 			database=database
 		)
@@ -25,7 +26,7 @@ def get_connection():
 		logging.error(f'Error connecting to MariaDB platform: {e}')
 		raise DataAccessError(e)
 
-	return conn.cursor()
+	return conn
 
 class Boobjuice:
 
@@ -56,10 +57,14 @@ class Boobjuice:
 		if timestamp is None:
 			timestamp = datetime.now().strftime(self.TIMESTAMP_FORMAT)
 		
-		cursor = get_connection()
+		conn = get_connection()
 
-		print('inserting', data)
-		pass
+		try:
+			pass
+		except:
+			pass
+		finally:
+			conn.close()
 
 	def update(self, data):
 		self.validate_data('update', data, [self.PARAM_TIMESTAMP, self.PARAM_MASS])
@@ -67,20 +72,28 @@ class Boobjuice:
 		timestamp = self.get_timestamp(data)
 		mass = data.get(self.PARAM_MASS)
 		
-		cursor = get_connection()
+		conn = get_connection()
 
-		print('updating...', data)
-		pass
+		try:
+			pass
+		except:
+			pass
+		finally:
+			conn.close()
 
 	def delete(self, data):
 		self.validate_data('delete', data, [self.PARAM_TIMESTAMP])
 		
 		timestamp = self.get_timestamp(data)
 		
-		cursor = get_connection()
+		conn = get_connection()
 
-		print('deleting...', data)
-		pass
+		try:
+			pass
+		except:
+			pass
+		finally:
+			conn.close()
 
 	def validate_data(self, method, data, params=[]):
 		if data is None:
