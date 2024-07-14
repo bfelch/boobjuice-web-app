@@ -17,7 +17,8 @@ def get_connection():
 			password=password,
 			host=host,
 			port=port,
-			database=database
+			database=database,
+			autocommit=True
 		)
 	except mariadb.Error as e:
 		raise DataAccessError(f'Error connecting to MariaDB platform: {e}')
