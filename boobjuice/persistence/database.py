@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 
 import os
-import logging
 import mariadb
 import random
 
@@ -12,8 +11,6 @@ def get_connection():
 	host = os.environ['MARIA_HOST']
 	port = int(os.environ['MARIA_PORT'])
 
-	logging.warn(f'maria variables: {database}, {username}, {password}, {host}, {port}')
-
 	try:
 		conn = mariadb.connect(
 			user=username,
@@ -23,8 +20,7 @@ def get_connection():
 			database=database
 		)
 	except mariadb.Error as e:
-		logging.error(f'Error connecting to MariaDB platform: {e}')
-		raise DataAccessError(e)
+		raise DataAccessError(f'Error connecting to MariaDB platform: {e}')
 
 	return conn
 
@@ -39,14 +35,23 @@ class Boobjuice:
 		pass
 
 	def get(self):
-		return self._build_random_entries()
-		# return [{'timestamp':'2024/07/08 09:44:36', 'mass':'123'},
-		#   {'timestamp':'2024/07/08 20:17:11', 'mass':'108'},
-		#   {'timestamp':'2024/07/09 04:11:32', 'mass':'144'},
-		#   {'timestamp':'2024/07/09 10:27:22', 'mass':'121'},
-		#   {'timestamp':'2024/07/09 23:27:22', 'mass':'136'},
-		#   {'timestamp':'2024/07/10 08:58:09', 'mass':'131'},
-		#   {'timestamp':'2024/07/10 13:33:47', 'mass':'117'}]
+
+		conn = get_connection()
+		results = []
+
+		try:
+			cur = conn.cursor()
+			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY DESC;')
+			for (timestamp, mass) in cur:
+				results.append({'timestamp':timestamp, 'mass':mass})
+		except mariadb.Error as e:
+			raise DataAccessError(f'Error selecting from database: {e}')
+		finally:
+			conn.close()
+
+		return results
+
+		# return self._build_random_entries()
 
 	def insert(self, data):
 		self.validate_data('insert', data, [self.PARAM_MASS])
@@ -60,9 +65,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
-			pass
-		except:
-			pass
+			cur = conn.cursor()
+			cur.execute('INSERT INTO BOOBJUICE(U_EXTRACTED, Q_GRAMS) VALUES(?, ?)', (timestamp, mass))
+		except mariadb.Error as e:
+			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
 			conn.close()
 
@@ -75,9 +81,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
-			pass
-		except:
-			pass
+			cur = conn.cursor()
+			cur.execute('UPDATE BOOBJUICE SET Q_GRAMS = ? WHERE U_EXTRACTED = ?', (mass, timestamp))
+		except mariadb.Error as e:
+			raise DataAccessError(f'Error updating database: {e}')
 		finally:
 			conn.close()
 
@@ -89,9 +96,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
-			pass
-		except:
-			pass
+			cur = conn.cursor()
+			cur.execute('DELETE FROM BOOBJUICE WHERE U_EXTRACTED = ?', (timestamp))
+		except mariadb.Error as e:
+			raise DataAccessError(f'Error deleting from database: {e}')
 		finally:
 			conn.close()
 
@@ -118,21 +126,21 @@ class Boobjuice:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')
 	
-	def _build_random_entries(self):
-		random.seed('1234')
+	# def _build_random_entries(self):
+	# 	random.seed('1234')
 
-		start_date = datetime.today()
-		entries = []
-		for i in range(40):
-			entries.append(self._build_random_entry(start_date))
+	# 	start_date = datetime.today()
+	# 	entries = []
+	# 	for i in range(40):
+	# 		entries.append(self._build_random_entry(start_date))
 		
-		return sorted(entries, key=lambda _e: _e.get('timestamp'))
+	# 	return sorted(entries, key=lambda _e: _e.get('timestamp'))
 
-	def _build_random_entry(self, start_date):
-		timestamp = start_date - timedelta(minutes=random.randrange(21600))
-		mass = 50 + random.randrange(300)
+	# def _build_random_entry(self, start_date):
+	# 	timestamp = start_date - timedelta(minutes=random.randrange(21600))
+	# 	mass = 50 + random.randrange(300)
 
-		return {'timestamp':timestamp.strftime('%Y-%m-%d %H:%M'), 'mass':mass}
+	# 	return {'timestamp':timestamp.strftime('%Y-%m-%d %H:%M'), 'mass':mass}
 
 class DataAccessError(Exception):
 	def __init__(self, message='failed to connect to database'):
