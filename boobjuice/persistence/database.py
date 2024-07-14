@@ -48,7 +48,7 @@ class Boobjuice:
 			   f'  `S_UPDATE` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n'
 			   f'  PRIMARY KEY (`{self.COL_ID}`),\n'
 			   f'  UNIQUE KEY `{self.COL_ID}_U1` (`{self.COL_ID}`)\n'
-			   f') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utfmb4_general_ci;')
+			   f') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;')
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error initializing table: {e}')
 		finally:
