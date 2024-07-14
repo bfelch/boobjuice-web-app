@@ -33,17 +33,34 @@ class Boobjuice:
 	ISO_STD = '%Y-%m-%d %H:%M'
 	ISO_8601 = '%Y-%m-%dT%H:%M'
 
+	TBL_NAME = 'PUMPED_MILK'
+	COL_ID = 'U_PUMPED'
+	COL_MASS = 'U_PUMPED_GRAMS'
+
 	def __init__(self):
-		pass
+		conn = get_connection()
+
+		try:
+			cur = conn.cursor()
+			cur.execute(f'CREATE TABLE IF NOT EXISTS {self.TBL_NAME} (
+			   `{self.COL_ID}` TIMESTAMP NOT NULL,
+			   `{self.COL_MASS}` SMALLINT(5) UNSIGNED DEFAULT NULL,
+			   `S_UPDATE` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+			   PRIMARY KEY (`{self.COL_ID}`),
+			   UNIQUE KEY `{self.COL_ID}_U1` (`{self.COL_ID}`)
+			   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utfmb4_general_ci;')
+		except mariadb.Error as e:
+			raise DataAccessError(f'Error initializing table: {e}')
+		finally:
+			conn.close()
 
 	def get(self):
-
 		conn = get_connection()
 		results = []
 
 		try:
 			cur = conn.cursor()
-			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY U_EXTRACTED ASC;')
+			cur.execute(f'SELECT {self.COL_ID}, {self.COL_MASS} FROM {self.TBL_NAME} ORDER BY {self.COL_ID} ASC;')
 			for (timestamp, mass) in cur:
 				results.append({'timestamp':timestamp.strftime(self.ISO_STD), 'mass':mass})
 		except mariadb.Error as e:
@@ -68,7 +85,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('INSERT INTO BOOBJUICE(U_EXTRACTED, Q_GRAMS) VALUES(?, ?);', (timestamp, mass))
+			cur.execute(f'INSERT INTO {self.TBL_NAME}({self.COL_ID}, {self.COL_MASS}) VALUES(?, ?);', (timestamp, mass))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
@@ -84,7 +101,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('UPDATE BOOBJUICE SET Q_GRAMS = ? WHERE U_EXTRACTED = ?;', (mass, timestamp))
+			cur.execute(f'UPDATE {self.TBL_NAME} SET {self.COL_MASS} = ? WHERE {self.COL_ID} = ?;', (mass, timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error updating database: {e}')
 		finally:
@@ -99,7 +116,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('DELETE FROM BOOBJUICE WHERE U_EXTRACTED = ?;', (timestamp,))
+			cur.execute(f'DELETE FROM {self.TBL_NAME} WHERE {self.COL_ID} = ?;', (timestamp,))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error deleting from database: {e}')
 		finally:
