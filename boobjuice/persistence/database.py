@@ -30,7 +30,7 @@ class Boobjuice:
 	PARAM_TIMESTAMP = 'timestamp'
 	PARAM_MASS = 'mass'
 
-	TIMESTAMP_FORMAT = '%Y-%m-%d %H:%M'
+	TIMESTAMP_FORMAT = '%Y-%m-%dT%H:%M'
 
 	def __init__(self):
 		pass
@@ -44,7 +44,7 @@ class Boobjuice:
 			cur = conn.cursor()
 			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY U_EXTRACTED DESC;')
 			for (timestamp, mass) in cur:
-				results.append({'timestamp':timestamp, 'mass':mass})
+				results.append({'timestamp':timestamp.strftime(self.TIMESTAMP_FORMAT), 'mass':mass})
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error selecting from database: {e}')
 		finally:

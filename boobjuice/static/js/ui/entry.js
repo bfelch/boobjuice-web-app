@@ -69,20 +69,14 @@ entry._initCurrentItem = function() {
 	}
 }
 
-entry.updateItemTimestamp = function() {
+entry._updateCurrentItem = function() {
 	this._initCurrentItem();
 
 	let timeInput = this.getTimeInput();
-	this.currentItem['timestamp'] = dateUtils.formatTimestamp(timeInput.value, dateUtils.ISO_STD);
-	// console.log('changed timestamp...', this.currentItem);
-}
-
-entry.updateItemMass = function() {
-	this._initCurrentItem();
+	this.currentItem['timestamp'] = dateUtils.formatTimestamp(timeInput.value, dateUtils.ISO_8601);
 
 	let massInput = this.getMassInput();
 	this.currentItem['mass'] = massInput.value;
-	// console.log('changed mass...', this.currentItem);
 }
 
 entry.getTimeInput = function() {
@@ -98,6 +92,8 @@ entry.getSubmitButton = function() {
 }
 
 entry.submit = function() {
+	this._updateCurrentItem();
+
 	if (!this.validate()) {
 		return;
 	}
