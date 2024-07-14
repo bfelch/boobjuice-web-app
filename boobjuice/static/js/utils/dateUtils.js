@@ -1,8 +1,12 @@
 let dateUtils = {};
-dateUtils.ISO_STD = 'YYYY-mm-dd HH:MM:SS';
-dateUtils.ISO_8601 = 'YYYY-mm-ddTHH:MM:SS';
+dateUtils.ISO_STD = 'YYYY-mm-dd HH:MM';
+dateUtils.ISO_8601 = 'YYYY-mm-ddTHH:MM';
 
 dateUtils.formatTimestamp = function(timestamp, format, includeTime=true, dateDelimiter='-', timeDelimiter=':') {
+	if (!timestamp) {
+		return undefined;
+	}
+
 	if (timestamp instanceof String) {
 		timestamp = Date.parse(timestamp);
 	}
@@ -14,10 +18,9 @@ dateUtils.formatTimestamp = function(timestamp, format, includeTime=true, dateDe
 	let day = datetime.getDate();
 	let hours = datetime.getHours();
 	let minutes = datetime.getMinutes();
-	let seconds = datetime.getSeconds();
 
 	let dateString = this.formatDate(year, month, day, format, dateDelimiter);
-	let timeString = this.formatTime(hours, minutes, seconds, format, timeDelimiter);
+	let timeString = this.formatTime(hours, minutes, format, timeDelimiter);
 
 	let formattedTimestamp = dateString;
 	if (includeTime) {
@@ -53,19 +56,18 @@ dateUtils.formatDate = function(year, month, day, format=this.ISO_8601, dateDeli
 	console.error(`Invalid date format: ${format}`);
 }
 
-dateUtils.formatTime = function(hours, minutes, seconds, format=this.ISO_8601, timeDelimiter=':') {
+dateUtils.formatTime = function(hours, minutes, format=this.ISO_8601, timeDelimiter=':') {
 	switch (format) {
 		case this.ISO_8601:
 			hours = this.padElement(hours, 2);
 			minutes = this.padElement(minutes, 2);
-			seconds = this.padElement(seconds, 2);
 			break;
 	}
 
 	switch (format) {
 		case this.ISO_STD:
 		case this.ISO_8601:
-			return `${hours}${timeDelimiter}${minutes}${timeDelimiter}${seconds}`;
+			return `${hours}${timeDelimiter}${minutes}`;
 	}
 
 	console.error(`Invalid time format: ${format}`);

@@ -1,1 +1,1 @@
-from boobjuice.persistence.database import Boobjuice, IllegalArgumentError
+from boobjuice.persistence.database import Boobjuice, DataAccessError, IllegalArgumentError

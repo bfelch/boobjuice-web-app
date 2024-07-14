@@ -8,10 +8,10 @@
 		<div class="w-100"><span class="text-secondary">Mass: </span>{{ item.mass }}g</div>
 	</div>
 	<div class="w-auto">
-		<button type="button" class="btn btn-secondary" onclick="entry.show('Update', {{item}})">
+		<button type="button" class="btn btn-secondary" onclick="entry.show(entry.MODE.UPDATE, {{item}})">
 			Edit <i class="bi-pencil"></i>
 		</button>
-		<button type="button" class="btn btn-danger" onclick="entry.show('Want to delete?', {{item}}, true)">
+		<button type="button" class="btn btn-danger" onclick="entry.show(entry.MODE.DELETE, {{item}})">
 			<i class="bi-trash"></i>
 		</button>
 	</div>

@@ -1,5 +1,7 @@
 from flask import Blueprint, flash, render_template, request
-from boobjuice.persistence import Boobjuice, IllegalArgumentError
+from boobjuice.persistence import Boobjuice, DataAccessError, IllegalArgumentError
+
+import logging
 
 views = Blueprint('views', __name__)
 
@@ -26,13 +28,20 @@ def record():
 			case 'DELETE':
 				datastore.delete(data)
 		flash('Success!', category='success')
+	except DataAccessError as e:
+		message = 'Data access error...'
+		logging.error(f'{message} {e.message}')
+		flash(message, category='danger')
+		return message, 500
 	except IllegalArgumentError as e:
-		print(e.message)
-		flash(e.message, category='danger')
-		return e.message, 500
+		message = 'Illegal argument error...'
+		logging.error(f'{message} {e.message}')
+		flash(message, category='danger')
+		return message, 500
 	except Exception as e:
-		print('Something went wrong...', e)
-		flash('Something went wrong...', category='danger')
-		return 'Something went wrong...', 500
+		message = 'Something went wrong...'
+		logging.error(f'{message} {e}')
+		flash(message, category='danger')
+		return message, 500
 	
 	return '', 200

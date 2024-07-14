@@ -21,6 +21,9 @@ on:
         - info
         - warning
         - debug
+  push:
+    branches:
+      - dev
   release:
     types: [published]
 
