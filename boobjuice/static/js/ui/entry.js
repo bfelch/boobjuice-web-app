@@ -64,6 +64,13 @@ entry.hide = function() {
 }
 
 entry._initModal = function(mode) {
+	let timestampNote = document.getElementById('entryTimestampNote');
+	if (mode == this.MODE.INSERT) {
+		timestampNote.innerHTML = 'leave blank for current timestamp';
+	} else {
+		timestampNote.innerHTML = '';
+	}
+	
 	this.getTimeInput().readOnly = mode >= this.MODE.UPDATE;
 	this.getTimeInput().disabled = mode >= this.MODE.UPDATE;
 	this.getMassInput().readOnly = mode >= this.MODE.DELETE;
