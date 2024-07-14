@@ -9,16 +9,15 @@ def get_connection():
 	database = os.environ['MARIA_DATABASE']
 	username = os.environ['MARIA_USERNAME']
 	password = os.environ['MARIA_PASSWORD']
-	host = os.environ['MARIA_HOST']
 	port = int(os.environ['MARIA_PORT'])
 
-	logging.info(f'maria variables: {database}, {username}, {password}, {host}, {port}')
+	logging.info(f'maria variables: {database}, {username}, {password}, {port}')
 
 	try:
 		conn = mariadb.connect(
 			user=username,
 			password=password,
-			host=host,
+			host='127.0.0.1',
 			port=port,
 			database=database
 		)
