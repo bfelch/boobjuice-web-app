@@ -41,7 +41,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY DESC;')
+			cur.execute('SELECT U_EXTRACTED, Q_GRAMS FROM BOOBJUICE ORDER BY U_EXTRACTED DESC;')
 			for (timestamp, mass) in cur:
 				results.append({'timestamp':timestamp, 'mass':mass})
 		except mariadb.Error as e:
@@ -66,7 +66,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('INSERT INTO BOOBJUICE(U_EXTRACTED, Q_GRAMS) VALUES(?, ?)', (timestamp, mass))
+			cur.execute('INSERT INTO BOOBJUICE(U_EXTRACTED, Q_GRAMS) VALUES(?, ?);', (timestamp, mass))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
@@ -82,7 +82,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('UPDATE BOOBJUICE SET Q_GRAMS = ? WHERE U_EXTRACTED = ?', (mass, timestamp))
+			cur.execute('UPDATE BOOBJUICE SET Q_GRAMS = ? WHERE U_EXTRACTED = ?;', (mass, timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error updating database: {e}')
 		finally:
@@ -97,7 +97,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute('DELETE FROM BOOBJUICE WHERE U_EXTRACTED = ?', (timestamp))
+			cur.execute('DELETE FROM BOOBJUICE WHERE U_EXTRACTED = ?;', (timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error deleting from database: {e}')
 		finally:
