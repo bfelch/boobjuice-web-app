@@ -10,10 +10,9 @@ def get_connection():
 	username = os.environ['MARIA_USERNAME']
 	password = os.environ['MARIA_PASSWORD']
 	host = os.environ['MARIA_HOST']
-	port = os.environ['MARIA_PORT']
+	port = int(os.environ['MARIA_PORT'])
 
 	logging.info(f'maria variables: {database}, {username}, {password}, {host}, {port}')
-	print('maria variables: ', database, username, password, host, port)
 
 	try:
 		conn = mariadb.connect(
@@ -24,7 +23,7 @@ def get_connection():
 			database=database
 		)
 	except mariadb.Error as e:
-		print('Error connecting to MariaDB platform: ', e)
+		logging.error(f'Error connecting to MariaDB platform: {e}')
 		raise DataAccessError(e)
 
 	return conn.cursor()
