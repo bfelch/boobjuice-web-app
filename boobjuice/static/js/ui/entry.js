@@ -36,15 +36,18 @@ entry.show = function(mode, item) {
 
 	let timeTag = this.getTimeInput()
 	let massTag = this.getMassInput();
+	let durationTag = this.getDurationInput();
 	if (item === undefined) {
 		timeTag.value = undefined;
 		massTag.value = 0;
+		durationTag.value = 0;
 
 		this.submitCallback = this.insert;
 	} else {
 		// YYYY-mm-ddTHH:MM:SS (ie '2024-07-08T20:17:49')
 		timeTag.value = dateUtils.formatTimestamp(item.timestamp, dateUtils.ISO_8601);
 		massTag.value = item.mass;
+		durationTag.value = item.duration;
 
 		this.currentItem = item;
 		if (mode == this.MODE.DELETE) {
@@ -75,6 +78,8 @@ entry._initModal = function(mode) {
 	this.getTimeInput().disabled = mode >= this.MODE.UPDATE;
 	this.getMassInput().readOnly = mode >= this.MODE.DELETE;
 	this.getMassInput().disabled = mode >= this.MODE.DELETE;
+	this.getDurationInput().readOnly = mode >= this.MODE.DELETE;
+	this.getDurationInput().disabled = mode >= this.MODE.DELETE;
 
 	let submitButton = this.getSubmitButton();
 	if (mode >= this.MODE.DELETE) {
@@ -102,6 +107,9 @@ entry._updateCurrentItem = function() {
 
 	let massInput = this.getMassInput();
 	this.currentItem['mass'] = massInput.value;
+
+	let durationInput = this.getDurationInput();
+	this.currentItem['duration'] = durationInput.value;
 }
 
 entry.getTimeInput = function() {
@@ -110,6 +118,10 @@ entry.getTimeInput = function() {
 
 entry.getMassInput = function() {
 	return document.getElementsByName('entryMass')[0];
+}
+
+entry.getDurationInput = function() {
+	return document.getElementsByName('entryDuration')[0];
 }
 
 entry.getSubmitButton = function() {
@@ -134,6 +146,10 @@ entry.validate = function() {
 
 	if (!this.currentItem.mass) {
 		return this.handleError('entry mass is undefined');
+	}
+
+	if (!this.currentItem.duration) {
+		return this.handleError('entry duration is undefined');
 	}
 
 	return true;
