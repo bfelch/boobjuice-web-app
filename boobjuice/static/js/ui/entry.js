@@ -36,15 +36,18 @@ entry.show = function(mode, item) {
 
 	let timeTag = this.getTimeInput()
 	let massTag = this.getMassInput();
+	let durationTag = this.getDurationInput();
 	if (item === undefined) {
 		timeTag.value = undefined;
 		massTag.value = 0;
+		durationTag.value = 0;
 
 		this.submitCallback = this.insert;
 	} else {
 		// YYYY-mm-ddTHH:MM:SS (ie '2024-07-08T20:17:49')
 		timeTag.value = dateUtils.formatTimestamp(item.timestamp, dateUtils.ISO_8601);
 		massTag.value = item.mass;
+		durationTag.value = item.duration;
 
 		this.currentItem = item;
 		if (mode == this.MODE.DELETE) {
