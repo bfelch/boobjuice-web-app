@@ -47,7 +47,7 @@ class Boobjuice:
 			cur.execute(f'CREATE TABLE IF NOT EXISTS {self.TBL_NAME} (\n'
 			   f'  `{self.COL_ID}` TIMESTAMP NOT NULL,\n'
 			   f'  `{self.COL_MASS}` SMALLINT(5) UNSIGNED DEFAULT NULL,\n'
-			   f'  `{self.COL_DURATION} SMALLINT(5) UNSIGNED DEFAULT NULL,\n'
+			   f'  `{self.COL_DURATION}` SMALLINT(5) UNSIGNED DEFAULT NULL,\n'
 			   f'  `S_UPDATE` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n'
 			   f'  PRIMARY KEY (`{self.COL_ID}`),\n'
 			   f'  UNIQUE KEY `{self.COL_ID}_U1` (`{self.COL_ID}`)\n'
