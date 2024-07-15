@@ -87,7 +87,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute(f'INSERT INTO {self.TBL_NAME}({self.COL_ID}, {self.COL_MASS}, {self.COL_DURATION}) VALUES(?, ?);', (timestamp, mass, duration))
+			cur.execute(f'INSERT INTO {self.TBL_NAME}({self.COL_ID}, {self.COL_MASS}, {self.COL_DURATION}) VALUES(?, ?, ?);', (timestamp, mass, duration))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
@@ -104,7 +104,7 @@ class Boobjuice:
 
 		try:
 			cur = conn.cursor()
-			cur.execute(f'UPDATE {self.TBL_NAME} SET {self.COL_MASS} = ?, {self.COL_DURATION} WHERE {self.COL_ID} = ?;', (mass, duration, timestamp))
+			cur.execute(f'UPDATE {self.TBL_NAME} SET {self.COL_MASS} = ?, {self.COL_DURATION} = ? WHERE {self.COL_ID} = ?;', (mass, duration, timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error updating database: {e}')
 		finally:
