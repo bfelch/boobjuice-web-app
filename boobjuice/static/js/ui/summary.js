@@ -1,4 +1,9 @@
 let summary = {};
+summary.TYPE = {
+	VOLUME: 0,
+	DURATION: 1
+};
+
 summary.entries = [];
 summary.range = {
 	max: undefined,
@@ -27,7 +32,26 @@ summary.setEntries = function(entries) {
 	this.resetFilters();
 }
 
+summary.initPlotTypes = function() {
+	let plotTypeInput = this._getPlotTypeInput();
+	plotTypeInput.innerHTML = '';
+
+	for (let key in this.TYPE) {
+		let option = document.createElement('option');
+		option.value = this.TYPE[key];
+		option.innerHTML = this._getPlotYTitle(this.TYPE[key]);
+		
+		plotTypeInput.appendChild(option);
+	}
+}
+
+summary.updatePlotType = function() {
+	this.plotType = Number(this._getPlotTypeInput().value);
+	this.updatePlot();
+}
+
 summary.resetFilters = function() {
+	this.plotType = this.TYPE.VOLUME;
 	this._initFilterRange();
 	this.updatePlot();
 }
@@ -85,7 +109,7 @@ summary.plotEntries = function() {
 	let layout = {
 		xaxis: {title: 'Date'},
 		yaxis: {
-			title: 'Volume (ml)',
+			title: this._getPlotYTitle(),
 			rangemode: 'tozero'
 		}
 	};
@@ -120,20 +144,22 @@ summary._getValues = function() {
 	});
 	let buckets = {};
 
+	let valueKey = this._getKeyValue();
+
 	values.data.x = tempEntries.map((entry) => {
 		let date = entry['date'].toDateString();
 		if (!buckets[date]) {
 			buckets[date] = [];
 		}
-		buckets[date].push(entry['volume']);
+		buckets[date].push(entry[valueKey]);
 
 		return date;
 	});
-	values.data.y = tempEntries.map((entry) => entry['volume']);
+	values.data.y = tempEntries.map((entry) => entry[valueKey]);
 
-	for (var key in buckets) {
-		let masses = buckets[key];
-		values.calculated.keys.push(key);
+	for (var dateKey in buckets) {
+		let masses = buckets[dateKey];
+		values.calculated.keys.push(dateKey);
 
 		let totalMass = masses
 			.map(mass => Number(mass))
@@ -144,6 +170,32 @@ summary._getValues = function() {
 	};
 
 	return values;
+}
+
+summary._getPlotYTitle = function(key=this.plotType) {
+	switch (key) {
+		case this.TYPE.VOLUME:
+			return 'Volume (ml)';
+		case this.TYPE.DURATION:
+			return 'Duration (min)';
+	}
+
+	return 'Title Placeholder';
+}
+
+summary._getKeyValue = function(key=this.plotType) {
+	switch (key) {
+		case this.TYPE.VOLUME:
+			return 'volume';
+		case this.TYPE.DURATION:
+			return 'duration';
+	}
+
+	return 'invalid';
+}
+
+summary._getPlotTypeInput = function() {
+	return document.getElementById('plotTypeInput');
 }
 
 summary._getPickers = function() {

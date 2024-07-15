@@ -12,20 +12,28 @@
 {% block content %}
 <div id="scatterPlot"></div>
 
-<div class="input-group flex-row p-1">
-	<span class="input-group-text col-2">Min Date</span>
-	<input type="date" class="form-control" id="plotMinPicker" onchange="summary.updatePlot()"/>
-</div>
-<div class="input-group flex-row p-1">
-	<span class="input-group-text col-2">Max Date</span>
-	<input type="date" class="form-control" id="plotMaxPicker" onchange="summary.updatePlot()"/>
-</div>
+<div class="flex-column ms-auto w-50 pt-5">
+	<div class="input-group flex-row pb-2">
+		<span class="input-group-text w-25">Plot Type</span>
+		<select id="plotTypeInput" name="plotTypeInput" class="form-select" onchange="summary.updatePlotType()"></select>
+	</div>
 
-<div class="d-flex flex-row-reverse p-3 column-gap-3">
-	<button type="button" class="btn btn-primary" onclick="summary.resetFilters()">Reset Filters</button>
+	<div class="input-group flex-row">
+		<span class="input-group-text w-25">Min Date</span>
+		<input type="date" class="form-control" id="plotMinPicker" onchange="summary.updatePlot()"/>
+	</div>
+	<div class="input-group flex-row">
+		<span class="input-group-text w-25">Max Date</span>
+		<input type="date" class="form-control" id="plotMaxPicker" onchange="summary.updatePlot()"/>
+	</div>
+
+	<div class="d-flex flex-row-reverse p-3 column-gap-3">
+		<button type="button" class="btn btn-primary" onclick="summary.resetFilters()">Reset Filters</button>
+	</div>
 </div>
 
 <script type="text/javascript">
 	summary.setEntries({{ entries|safe }});
+	summary.initPlotTypes();
 </script>
 {% endblock %}
