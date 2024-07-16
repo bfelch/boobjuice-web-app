@@ -1,4 +1,9 @@
 let summary = {};
+summary.TYPE = {
+	VOLUME: 0,
+	DURATION: 1
+};
+
 summary.entries = [];
 summary.range = {
 	max: undefined,
@@ -27,7 +32,26 @@ summary.setEntries = function(entries) {
 	this.resetFilters();
 }
 
+summary.initPlotTypes = function() {
+	let plotTypeInput = this._getPlotTypeInput();
+	plotTypeInput.innerHTML = '';
+
+	for (let key in this.TYPE) {
+		let option = document.createElement('option');
+		option.value = this.TYPE[key];
+		option.innerHTML = this._getPlotYTitle(this.TYPE[key]);
+		
+		plotTypeInput.appendChild(option);
+	}
+}
+
+summary.updatePlotType = function() {
+	this.plotType = Number(this._getPlotTypeInput().value);
+	this.updatePlot();
+}
+
 summary.resetFilters = function() {
+	this.plotType = this.TYPE.VOLUME;
 	this._initFilterRange();
 	this.updatePlot();
 }
@@ -39,6 +63,17 @@ summary._initFilterRange = function() {
 	let pickers = this._getPickers();
 	pickers[0].value = this._getFilterDate(this.range.min);
 	pickers[1].value = this._getFilterDate(this.range.max);
+}
+
+summary.updatePlotDetails = function(numberPumps, totalValue) {
+	let plotDetails = this._getPlotDetails();
+
+	let plotType = this._getPlotYTitle();
+	plotDetails[0].value = numberPumps;
+	plotDetails[1].innerHTML = 'Total ' + plotType;
+	plotDetails[2].value = this._formatNumber(totalValue);
+	plotDetails[3].innerHTML = 'Average ' + plotType;
+	plotDetails[4].value = this._formatNumber(totalValue / numberPumps);
 }
 
 summary.plotEntries = function() {
@@ -85,10 +120,12 @@ summary.plotEntries = function() {
 	let layout = {
 		xaxis: {title: 'Date'},
 		yaxis: {
-			title: 'Volume (ml)',
+			title: this._getPlotYTitle(),
 			rangemode: 'tozero'
 		}
 	};
+
+	this.updatePlotDetails(values.details.numberPumps, values.details.totalValue);
 
 	let plot = document.getElementById('scatterPlot');
 	Plotly.newPlot(plot, [average, total, data], layout);
@@ -110,6 +147,10 @@ summary._getValues = function() {
 			keys:[],
 			averages:[],
 			totals:[]
+		},
+		details:{
+			totalValue:0,
+			numberPumps:0
 		}
 	};
 
@@ -120,30 +161,61 @@ summary._getValues = function() {
 	});
 	let buckets = {};
 
+	let valueKey = this._getKeyValue();
+
 	values.data.x = tempEntries.map((entry) => {
 		let date = entry['date'].toDateString();
 		if (!buckets[date]) {
 			buckets[date] = [];
 		}
-		buckets[date].push(entry['volume']);
+		buckets[date].push(entry[valueKey]);
 
 		return date;
 	});
-	values.data.y = tempEntries.map((entry) => entry['volume']);
+	values.data.y = tempEntries.map((entry) => this._formatNumber(entry[valueKey]));
 
-	for (var key in buckets) {
-		let masses = buckets[key];
-		values.calculated.keys.push(key);
+	for (var dateKey in buckets) {
+		let pumpValues = buckets[dateKey];
+		values.calculated.keys.push(dateKey);
 
-		let totalMass = masses
-			.map(mass => Number(mass))
-			.reduce((partialSum, mass) => partialSum + mass, 0);
+		let subtotalPumpValue = pumpValues
+			.map(pumpValue => Number(pumpValue))
+			.reduce((partialSum, pumpValue) => partialSum + pumpValue, 0);
 
-		values.calculated.totals.push(totalMass);
-		values.calculated.averages.push(totalMass / masses.length);
+		values.calculated.totals.push(this._formatNumber(subtotalPumpValue));
+		values.calculated.averages.push(this._formatNumber(subtotalPumpValue / pumpValues.length));
+
+		values.details.totalValue += subtotalPumpValue;
+		values.details.numberPumps += pumpValues.length;
 	};
 
 	return values;
+}
+
+summary._getPlotYTitle = function(key=this.plotType) {
+	switch (key) {
+		case this.TYPE.VOLUME:
+			return 'Volume (ml)';
+		case this.TYPE.DURATION:
+			return 'Duration (min)';
+	}
+
+	return 'Title Placeholder';
+}
+
+summary._getKeyValue = function(key=this.plotType) {
+	switch (key) {
+		case this.TYPE.VOLUME:
+			return 'volume';
+		case this.TYPE.DURATION:
+			return 'duration';
+	}
+
+	return 'invalid';
+}
+
+summary._getPlotTypeInput = function() {
+	return document.getElementById('plotTypeInput');
 }
 
 summary._getPickers = function() {
@@ -152,4 +224,18 @@ summary._getPickers = function() {
 
 summary._getFilterDate = function(date) {
 	return dateUtils.formatTimestamp(date, dateUtils.ISO_8601, false);
+}
+
+summary._getPlotDetails = function() {
+	return [
+		document.getElementById('plotNumberPumpsDetails'),
+		document.getElementById('plotTotalValueLabel'),
+		document.getElementById('plotTotalValueDetails'),
+		document.getElementById('plotAverageValueLabel'),
+		document.getElementById('plotAverageValueDetails')
+	];
+}
+
+summary._formatNumber = function(number) {
+	return Number(number.toFixed(2));
 }
