@@ -10,6 +10,21 @@
 {% endblock %}
 
 {% block content %}
+<div class="flex-column me-auto pt-5">
+	<div class="input-group flex-row pb-2">
+		<span class="input-group-text w-25">Number of Pumps</span>
+		<input type="text" class="form-control" id="plotNumberPumpsDetails"/>
+	</div>
+	<div class="input-group flex-row pb-2">
+		<span class="input-group-text w-25" id="plotTotalValueLabel">Total Value</span>
+		<input type="text" class="form-control" id="plotTotalValueDetails"/>
+	</div>
+	<div class="input-group flex-row pb-2">
+		<span class="input-group-text w-25" id="plotAverageValueLabel">Average Value</span>
+		<input type="text" class="form-control" id="plotAverageValueDetails"/>
+	</div>
+</div>
+
 <div id="scatterPlot"></div>
 
 <div class="flex-column ms-auto w-50 pt-5">

@@ -65,6 +65,17 @@ summary._initFilterRange = function() {
 	pickers[1].value = this._getFilterDate(this.range.max);
 }
 
+summary.updatePlotDetails = function(numberPumps, totalValue) {
+	let plotDetails = this._getPlotDetails();
+
+	let plotType = this._getPlotYTitle();
+	plotDetails[0].value = numberPumps;
+	plotDetails[1].innerHTML = 'Total ' + plotType;
+	plotDetails[2].value = this._formatNumber(totalValue);
+	plotDetails[3].innerHTML = 'Average ' + plotType;
+	plotDetails[4].value = this._formatNumber(totalValue / numberPumps);
+}
+
 summary.plotEntries = function() {
 	let values = this._getValues();
 	let data = {
@@ -114,6 +125,8 @@ summary.plotEntries = function() {
 		}
 	};
 
+	this.updatePlotDetails(values.details.numberPumps, values.details.totalValue);
+
 	let plot = document.getElementById('scatterPlot');
 	Plotly.newPlot(plot, [average, total, data], layout);
 }
@@ -134,6 +147,10 @@ summary._getValues = function() {
 			keys:[],
 			averages:[],
 			totals:[]
+		},
+		details:{
+			totalValue:0,
+			numberPumps:0
 		}
 	};
 
@@ -155,18 +172,21 @@ summary._getValues = function() {
 
 		return date;
 	});
-	values.data.y = tempEntries.map((entry) => entry[valueKey]);
+	values.data.y = tempEntries.map((entry) => this._formatNumber(entry[valueKey]));
 
 	for (var dateKey in buckets) {
-		let masses = buckets[dateKey];
+		let pumpValues = buckets[dateKey];
 		values.calculated.keys.push(dateKey);
 
-		let totalMass = masses
-			.map(mass => Number(mass))
-			.reduce((partialSum, mass) => partialSum + mass, 0);
+		let subtotalPumpValue = pumpValues
+			.map(pumpValue => Number(pumpValue))
+			.reduce((partialSum, pumpValue) => partialSum + pumpValue, 0);
 
-		values.calculated.totals.push(totalMass);
-		values.calculated.averages.push(totalMass / masses.length);
+		values.calculated.totals.push(this._formatNumber(subtotalPumpValue));
+		values.calculated.averages.push(this._formatNumber(subtotalPumpValue / pumpValues.length));
+
+		values.details.totalValue += subtotalPumpValue;
+		values.details.numberPumps += pumpValues.length;
 	};
 
 	return values;
@@ -204,4 +224,18 @@ summary._getPickers = function() {
 
 summary._getFilterDate = function(date) {
 	return dateUtils.formatTimestamp(date, dateUtils.ISO_8601, false);
+}
+
+summary._getPlotDetails = function() {
+	return [
+		document.getElementById('plotNumberPumpsDetails'),
+		document.getElementById('plotTotalValueLabel'),
+		document.getElementById('plotTotalValueDetails'),
+		document.getElementById('plotAverageValueLabel'),
+		document.getElementById('plotAverageValueDetails')
+	];
+}
+
+summary._formatNumber = function(number) {
+	return Number(number.toFixed(2));
 }
