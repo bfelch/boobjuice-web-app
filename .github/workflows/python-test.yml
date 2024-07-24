@@ -37,13 +37,13 @@ jobs:
           # Version of MariaDB to use
           mariadb version: 1.1.10
           # MYSQL_ROOT_PASSWORD - root superuser password
-          mysql root password: PLACEHOLDER
+          mysql root password: ${{ secrets.TEST_DB_ROOT_PASSWORD }}
           # MYSQL_DATABASE - name for the default database that is created
-          mysql database: test_db
+          mysql database: boobjuiceDb
           # MYSQL_USER - create the specified user with superuser power for created database
-          mysql user: PLACEHOLDER
+          mysql user: boobjuiceUser
           # MYSQL_PASSWORD - specified superuser password which user is power for created database
-          mysql password: PLACEHOLDER
+          mysql password: ${{ secrets.TEST_DB_PASSWORD }}
           
       - name: Run pytest
         # You may pin to the exact commit or the version.
