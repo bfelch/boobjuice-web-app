@@ -28,7 +28,7 @@ def get_query(filename):
 	dir = os.path.dirname(__file__)
 	return open(os.path.join(dir, 'queries', filename), 'r').read()
 
-class Boobjuice:
+class PumpedMilk:
 
 	PARAM_TIMESTAMP = 'timestamp'
 	PARAM_MASS = 'mass'
@@ -60,7 +60,7 @@ class Boobjuice:
 		results = []
 
 		try:
-			query = get_query('get_pumped_milk.txt')
+			query = get_query('select_pumped_milk.txt')
 
 			cur = conn.cursor()
 			cur.execute(query)
@@ -86,8 +86,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
+			query = get_query('insert_pumped_milk.txt')
+
 			cur = conn.cursor()
-			cur.execute(f'INSERT INTO {self.TBL_NAME}({self.COL_ID}, {self.COL_MASS}, {self.COL_DURATION}) VALUES(?, ?, ?);', (timestamp, mass, duration))
+			cur.execute(query, (timestamp, mass, duration))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
@@ -103,8 +105,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
+			query = get_query('update_pumped_milk.txt')
+
 			cur = conn.cursor()
-			cur.execute(f'UPDATE {self.TBL_NAME} SET {self.COL_MASS} = ?, {self.COL_DURATION} = ? WHERE {self.COL_ID} = ?;', (mass, duration, timestamp))
+			cur.execute(query, (mass, duration, timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error updating database: {e}')
 		finally:
@@ -118,8 +122,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
+			query = get_query('delete_pumped_milk.txt')
+
 			cur = conn.cursor()
-			cur.execute(f'DELETE FROM {self.TBL_NAME} WHERE {self.COL_ID} = ?;', (timestamp,))
+			cur.execute(query, (timestamp,))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error deleting from database: {e}')
 		finally:
