@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import os
 import mariadb
-import random
 
 def get_connection():
 	database = os.environ['MARIA_DATABASE']
@@ -25,6 +24,9 @@ def get_connection():
 
 	return conn
 
+def get_query(filename):
+	return open(f'./queries/{filename}', 'r').read()
+
 class Boobjuice:
 
 	PARAM_TIMESTAMP = 'timestamp'
@@ -43,15 +45,10 @@ class Boobjuice:
 		conn = get_connection()
 
 		try:
+			query = get_query('create_pumped_milk.txt')
+
 			cur = conn.cursor()
-			cur.execute(f'CREATE TABLE IF NOT EXISTS {self.TBL_NAME} (\n'
-			   f'  `{self.COL_ID}` TIMESTAMP NOT NULL,\n'
-			   f'  `{self.COL_MASS}` SMALLINT(5) UNSIGNED DEFAULT NULL,\n'
-			   f'  `{self.COL_DURATION}` SMALLINT(5) UNSIGNED DEFAULT NULL,\n'
-			   f'  `S_UPDATE` TIMESTAMP NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),\n'
-			   f'  PRIMARY KEY (`{self.COL_ID}`),\n'
-			   f'  UNIQUE KEY `{self.COL_ID}_U1` (`{self.COL_ID}`)\n'
-			   f') ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;')
+			cur.execute(query)
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error initializing table: {e}')
 		finally:
@@ -62,8 +59,10 @@ class Boobjuice:
 		results = []
 
 		try:
+			query = get_query('get_pumped_milk.txt')
+
 			cur = conn.cursor()
-			cur.execute(f'SELECT {self.COL_ID}, {self.COL_MASS}, {self.COL_DURATION} FROM {self.TBL_NAME} ORDER BY {self.COL_ID} ASC;')
+			cur.execute(query)
 			for (timestamp, mass, duration) in cur:
 				results.append({'timestamp':timestamp.strftime(self.ISO_STD), 'mass':mass, 'duration':duration})
 		except mariadb.Error as e:
