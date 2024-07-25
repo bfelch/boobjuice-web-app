@@ -25,7 +25,8 @@ def get_connection():
 	return conn
 
 def get_query(filename):
-	return open(f'./queries/{filename}', 'r').read()
+	dir = os.path.dirname(__file__)
+	return open(os.path.join(dir, 'queries', filename), 'r').read()
 
 class Boobjuice:
 
