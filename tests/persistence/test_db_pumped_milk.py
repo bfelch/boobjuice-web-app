@@ -1,5 +1,4 @@
 import pytest
-from pytest_mock import mocker
 
 from datetime import datetime
 from tests.persistence.utils import mock_init, mock_connection
