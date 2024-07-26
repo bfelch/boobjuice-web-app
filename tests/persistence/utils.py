@@ -27,9 +27,3 @@ class Cursor:
 	
 	def __iter__(self):
 		yield self.iter_list
-
-def mock_init(mocker):
-	mocker.patch('boobjuice.persistence.database.PumpedMilk.__init__', return_value=None)
-
-def mock_connection(mocker, error=False, iter_list=None):
-	mocker.patch('boobjuice.persistence.database.get_connection', return_value=Connection(error=error, iter_list=iter_list))

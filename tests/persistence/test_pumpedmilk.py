@@ -1,14 +1,20 @@
 import pytest
 
 from datetime import datetime
-from tests.persistence.utils import mock_init, mock_connection
-from boobjuice.persistence.database import PumpedMilk, DataAccessError, IllegalArgumentError
+from tests.persistence.utils import Connection
+from boobjuice.persistence import PumpedMilk, DataAccessError, IllegalArgumentError
+
+def mock_init(mocker):
+	mocker.patch('boobjuice.persistence.pumpedmilk.PumpedMilk.__init__', return_value=None)
+
+def mock_connection(mocker, error=False, iter_list=None):
+	mocker.patch('boobjuice.persistence.pumpedmilk.get_connection', return_value=Connection(error=error, iter_list=iter_list))
 
 def test_init_db_error(mocker):
 	mock_connection(mocker, error=True)
 
 	try:
-		pumpedMilk = PumpedMilk()
+		PumpedMilk()
 		pytest.fail('should have failed to init database', pytrace=True)
 	except DataAccessError:
 		assert True
@@ -17,7 +23,7 @@ def test_init_success(mocker):
 	mock_connection(mocker)
 
 	try:
-		pumpedMilk = PumpedMilk()
+		PumpedMilk()
 	except DataAccessError:
 		pytest.fail('failed to init database', pytrace=True)
 
