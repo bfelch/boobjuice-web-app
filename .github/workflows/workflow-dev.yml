@@ -17,16 +17,13 @@ on:
       - dev
 
 jobs:
-  pytest:
+  dev_workflow:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: Pytest
         uses: ./.github/workflows/python-test
-  
-  docker_image:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v1
+
+      - uses: actions/checkout@v4
       - name: Docker Image
         uses: ./.github/workflows/docker-image
