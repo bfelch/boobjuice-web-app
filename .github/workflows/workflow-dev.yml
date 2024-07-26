@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pytest
-        uses: ./.github/workflows/python-test/
+        uses: ../.github/workflows/python-test
 
       - name: Docker Image
         uses: ./.github/workflows/docker-image
