@@ -20,11 +20,8 @@ jobs:
   dev_workflow:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
       - name: Pytest
-        uses: ./.github/workflows/python-test
+        uses: ./.github/workflows/python-test/
 
       - name: Docker Image
         uses: ./.github/workflows/docker-image
