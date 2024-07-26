@@ -17,11 +17,9 @@ on:
       - dev
 
 jobs:
-  dev_workflow:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Pytest
-        uses: bfelch/boobjuice-web-app/.github/workflows/python-test.yml
+  pytest:
+    uses: ./.github/workflows/python-test.yml@dev
 
-      - name: Docker Image
-        uses: ./.github/workflows/docker-image
+  docker_image:
+    needs: pytest
+    uses: ./.github/workflows/docker-image.yml@dev
