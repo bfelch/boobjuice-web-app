@@ -15,6 +15,9 @@ on:
   push:
     branches:
       - dev
+    paths:
+      - '**.py'
+      - '**.js'
 
 jobs:
   dev_workflow:
