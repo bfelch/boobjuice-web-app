@@ -28,6 +28,14 @@ def get_query(filename):
 	dir = os.path.dirname(__file__)
 	return open(os.path.join(dir, 'queries', filename), 'r').read()
 
+def validate_data(method, data, params=[]):
+	if data is None:
+		raise IllegalArgumentError(f'object is invalid for {method}')
+	
+	for param in params:
+		if data.get(param) is None:
+			raise IllegalArgumentError(f'{param} is invalid for {method}')
+
 class PumpedMilk:
 
 	PARAM_TIMESTAMP = 'timestamp'
@@ -36,11 +44,6 @@ class PumpedMilk:
 
 	ISO_STD = '%Y-%m-%d %H:%M'
 	ISO_8601 = '%Y-%m-%dT%H:%M'
-
-	TBL_NAME = 'PUMPED_MILK'
-	COL_ID = 'U_PUMPED'
-	COL_MASS = 'Q_PUMPED_GRAMS'
-	COL_DURATION = 'Q_PUMPED_MINUTES'
 
 	def __init__(self):
 		conn = get_connection()
@@ -74,7 +77,7 @@ class PumpedMilk:
 		return results
 
 	def insert(self, data):
-		self.validate_data('insert', data, [self.PARAM_MASS, self.PARAM_DURATION])
+		validate_data('pumped_milk.insert', data, [self.PARAM_MASS, self.PARAM_DURATION])
 
 		timestamp = self.get_timestamp(data, optional=True)
 		mass = data.get(self.PARAM_MASS)
@@ -96,7 +99,7 @@ class PumpedMilk:
 			conn.close()
 
 	def update(self, data):
-		self.validate_data('update', data, [self.PARAM_TIMESTAMP, self.PARAM_MASS, self.PARAM_DURATION])
+		validate_data('pumped_milk.update', data, [self.PARAM_TIMESTAMP, self.PARAM_MASS, self.PARAM_DURATION])
 
 		timestamp = self.get_timestamp(data)
 		mass = data.get(self.PARAM_MASS)
@@ -115,7 +118,7 @@ class PumpedMilk:
 			conn.close()
 
 	def delete(self, data):
-		self.validate_data('delete', data, [self.PARAM_TIMESTAMP])
+		validate_data('pumped_milk.delete', data, [self.PARAM_TIMESTAMP])
 		
 		timestamp = self.get_timestamp(data)
 		
@@ -130,21 +133,18 @@ class PumpedMilk:
 			raise DataAccessError(f'Error deleting from database: {e}')
 		finally:
 			conn.close()
-
-	def validate_data(self, method, data, params=[]):
-		if data is None:
-			raise IllegalArgumentError('object is invalid for ' + method)
-		
-		for param in params:
-			if data.get(param) is None:
-				raise IllegalArgumentError(param + ' is invalid for ' + method)
 	
 	def get_timestamp(self, data, optional=False):
 		if optional and self.PARAM_TIMESTAMP not in data:
 			return None
 		
+		if optional and data.get(self.PARAM_TIMESTAMP) is None:
+			return None
+		
 		try:
 			timestamp = data.get(self.PARAM_TIMESTAMP)
+			if timestamp is None:
+				raise Exception
 		except:
 			raise IllegalArgumentError('timestamp is required')
 		
@@ -153,6 +153,7 @@ class PumpedMilk:
 		except ValueError:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')
+
 
 class DataAccessError(Exception):
 	def __init__(self, message='failed to connect to database'):
