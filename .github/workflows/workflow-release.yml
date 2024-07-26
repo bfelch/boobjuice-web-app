@@ -1,4 +1,4 @@
-name: Dev Workflow
+name: Release Workflow
 
 on:
   workflow_dispatch:
@@ -12,9 +12,9 @@ on:
         - info
         - warning
         - debug
-  push:
-    branches:
-      - dev
+  release:
+    types:
+      - published
 
 jobs:
   pytest:
