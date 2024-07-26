@@ -3,7 +3,7 @@
 
 name: Python Test
 
-on: workflow-call
+on: workflow_call
 
 permissions:
   contents: read
