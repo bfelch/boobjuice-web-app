@@ -23,3 +23,4 @@ jobs:
   docker_image:
     needs: pytest
     uses: bfelch/boobjuice-web-app/.github/workflows/docker-image.yml@dev
+    secrets: inherit
