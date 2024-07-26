@@ -3,24 +3,11 @@
 
 name: Python Test
 
-on:
-  workflow_dispatch:
-      inputs:
-        logLevel:
-          description: 'Log Level'
-          required: true
-          default: 'warning'
-          type: choice
-          options:
-          - info
-          - warning
-          - debug
-
 permissions:
   contents: read
 
 jobs:
-  build:
+  pytest:
 
     runs-on: ubuntu-latest
 

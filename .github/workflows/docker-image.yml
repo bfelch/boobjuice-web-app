@@ -10,20 +10,6 @@
 name: Publish Docker image
 
 on:
-  workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log Level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
-  push:
-    branches:
-      - dev
   release:
     types: [published]
 
