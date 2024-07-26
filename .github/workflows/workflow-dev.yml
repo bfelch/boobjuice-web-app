@@ -15,12 +15,10 @@ on:
   push:
     branches:
       - dev
-    paths:
-      - '**.py'
-      - '**.js'
 
 jobs:
   dev_workflow:
+    runs-on: ubuntu-latest
     steps:
       - name: Pytest
         uses: ./.github/workflows/python-test
