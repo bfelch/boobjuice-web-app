@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Pytest
-        uses: ./.github/workflows/python-test.yml
+        uses: bfelch/boobjuice-web-app/.github/workflows/python-test.yml
 
       - name: Docker Image
         uses: ./.github/workflows/docker-image
