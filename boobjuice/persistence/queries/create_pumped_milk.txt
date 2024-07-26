@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS `PUMPED_MILK` (
+  `U_PUMPED` timestamp NOT NULL,
+  `Q_PUMPED_GRAMS` smallint(5) unsigned DEFAULT NULL,
+  `Q_PUMPED_MINUTES` smallint(5) unsigned DEFAULT NULL,
+  `S_UPDATE` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`U_PUMPED`),
+  UNIQUE KEY `U_PUMPED_U1` (`U_PUMPED`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

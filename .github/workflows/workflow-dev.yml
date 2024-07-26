@@ -1,0 +1,29 @@
+name: Dev Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        description: 'Log Level'
+        required: true
+        default: 'warning'
+        type: choice
+        options:
+        - info
+        - warning
+        - debug
+  push:
+    branches:
+      - dev
+    paths:
+      - '**.py'
+      - '**.js'
+
+jobs:
+  dev_workflow:
+    steps:
+      - name: Pytest
+        uses: ./.github/workflows/python-test
+
+      - name: Docker Image
+        uses: ./.github/workflows/docker-image

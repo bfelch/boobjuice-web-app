@@ -1,19 +1,19 @@
 from flask import Blueprint, flash, render_template, request
-from boobjuice.persistence import Boobjuice, DataAccessError, IllegalArgumentError
+from boobjuice.persistence import PumpedMilk, DataAccessError, IllegalArgumentError
 
 import logging
 
 views = Blueprint('views', __name__)
 
-datastore = Boobjuice()
+pumpedMilk = PumpedMilk()
 
 @views.route('/')
 def summary():
-	return render_template('summary.html', entries=datastore.get())
+	return render_template('summary.html', entries=pumpedMilk.get())
 
 @views.route('/manage')
 def manage():
-	return render_template('manage.html', entries=datastore.get())
+	return render_template('manage.html', entries=pumpedMilk.get())
 
 @views.route('/record', methods=['PUT', 'POST', 'DELETE'])
 def record():
@@ -22,11 +22,11 @@ def record():
 
 		match request.method:
 			case 'PUT':
-				datastore.insert(data)
+				pumpedMilk.insert(data)
 			case 'POST':
-				datastore.update(data)
+				pumpedMilk.update(data)
 			case 'DELETE':
-				datastore.delete(data)
+				pumpedMilk.delete(data)
 		flash('Success!', category='success')
 	except DataAccessError as e:
 		message = 'Data access error...'
