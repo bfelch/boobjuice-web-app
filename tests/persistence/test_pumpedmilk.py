@@ -55,7 +55,7 @@ def test_get_success(mocker):
 		assert len(pumped_list) == 1
 
 		pumped_dict = pumped_list[0]
-		assert pumped_dict[pumpedMilk.PARAM_TIMESTAMP] == pumped_tuple[0].strftime(ISO_STD)
+		assert pumped_dict[pumpedMilk.PARAM_TIMESTAMP] == pumped_tuple[0].strftime(ISO_8601)
 		assert pumped_dict[pumpedMilk.PARAM_MASS] == pumped_tuple[1]
 		assert pumped_dict[pumpedMilk.PARAM_DURATION] == pumped_tuple[2]
 	except DataAccessError:
