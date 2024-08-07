@@ -52,7 +52,7 @@ class PumpedMilk:
 		duration = data.get(self.PARAM_DURATION)
 
 		if timestamp is None:
-			timestamp = date_utils.current_datetime()
+			timestamp = date_utils.current_timestamp(date_utils.ISO_8601)
 		
 		conn = get_connection()
 
@@ -102,7 +102,7 @@ class PumpedMilk:
 		finally:
 			conn.close()
 	
-	def get_timestamp(self, data:dict, optional:bool=False) -> datetime:
+	def get_timestamp(self, data:dict, optional:bool=False) -> str:
 		if optional and self.PARAM_TIMESTAMP not in data:
 			return None
 		
@@ -117,7 +117,7 @@ class PumpedMilk:
 			raise IllegalArgumentError('timestamp is required')
 		
 		try:
-			return date_utils.datetime_from_timestamp(timestamp, date_utils.ISO_8601)
+			return date_utils.convert_timestamp(timestamp, date_utils.ISO_8601)
 		except ValueError:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')
