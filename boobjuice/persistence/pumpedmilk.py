@@ -117,7 +117,7 @@ class PumpedMilk:
 			raise IllegalArgumentError('timestamp is required')
 		
 		try:
-			return date_utils.datetime_from_timestamp(timestamp, date_utils.ISO_8601)
+			return date_utils.datetime_from_timestamp(timestamp, date_utils.ISO_STD)
 		except ValueError:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')
