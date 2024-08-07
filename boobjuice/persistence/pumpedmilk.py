@@ -35,7 +35,7 @@ class PumpedMilk:
 			cur = conn.cursor()
 			cur.execute(query)
 			for (timestamp, mass, duration) in cur:
-				timestamp = date_utils.timestamp_from_datetime(timestamp, date_utils.ISO_STD)
+				timestamp = date_utils.timestamp_from_datetime(timestamp, date_utils.ISO_8601)
 				results.append({'timestamp':timestamp, 'mass':mass, 'duration':duration})
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error selecting from database: {e}')
@@ -117,7 +117,7 @@ class PumpedMilk:
 			raise IllegalArgumentError('timestamp is required')
 		
 		try:
-			return date_utils.datetime_from_timestamp(timestamp, date_utils.ISO_STD)
+			return date_utils.datetime_from_timestamp(timestamp, date_utils.ISO_8601)
 		except ValueError:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')
