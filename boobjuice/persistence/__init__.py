@@ -1,2 +1,2 @@
-from boobjuice.persistence.pumpedmilk import PumpedMilk
-from boobjuice.persistence.utils import DataAccessError, IllegalArgumentError
+from .pumpedmilk import PumpedMilk
+from .utils import DataAccessError, IllegalArgumentError

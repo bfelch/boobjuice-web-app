@@ -1,8 +1,10 @@
 import mariadb
 
+from datetime import datetime
+
 from boobjuice.persistence.utils import get_connection, get_query, validate_data
 from boobjuice.persistence.utils import DataAccessError, IllegalArgumentError
-from datetime import datetime
+from boobjuice.utils import date_utils
 
 class PumpedMilk:
 
@@ -10,10 +12,7 @@ class PumpedMilk:
 	PARAM_MASS = 'mass'
 	PARAM_DURATION = 'duration'
 
-	ISO_STD = '%Y-%m-%d %H:%M'
-	ISO_8601 = '%Y-%m-%dT%H:%M'
-
-	def __init__(self):
+	def __init__(self) -> None:
 		conn = get_connection()
 
 		try:
@@ -26,7 +25,7 @@ class PumpedMilk:
 		finally:
 			conn.close()
 
-	def get(self):
+	def get(self) -> list[dict]:
 		conn = get_connection()
 		results = []
 
@@ -36,7 +35,8 @@ class PumpedMilk:
 			cur = conn.cursor()
 			cur.execute(query)
 			for (timestamp, mass, duration) in cur:
-				results.append({'timestamp':timestamp.strftime(self.ISO_STD), 'mass':mass, 'duration':duration})
+				timestamp = date_utils.timestamp_from_datetime(timestamp, date_utils.ISO_STD)
+				results.append({'timestamp':timestamp, 'mass':mass, 'duration':duration})
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error selecting from database: {e}')
 		finally:
@@ -44,7 +44,7 @@ class PumpedMilk:
 
 		return results
 
-	def insert(self, data):
+	def insert(self, data:dict) -> None:
 		validate_data('pumped_milk.insert', data, [self.PARAM_MASS, self.PARAM_DURATION])
 
 		timestamp = self.get_timestamp(data, optional=True)
@@ -52,7 +52,7 @@ class PumpedMilk:
 		duration = data.get(self.PARAM_DURATION)
 
 		if timestamp is None:
-			timestamp = datetime.now().strftime(self.ISO_8601)
+			timestamp = date_utils.current_datetime()
 		
 		conn = get_connection()
 
@@ -66,7 +66,7 @@ class PumpedMilk:
 		finally:
 			conn.close()
 
-	def update(self, data):
+	def update(self, data:dict) -> None:
 		validate_data('pumped_milk.update', data, [self.PARAM_TIMESTAMP, self.PARAM_MASS, self.PARAM_DURATION])
 
 		timestamp = self.get_timestamp(data)
@@ -85,7 +85,7 @@ class PumpedMilk:
 		finally:
 			conn.close()
 
-	def delete(self, data):
+	def delete(self, data:dict) -> None:
 		validate_data('pumped_milk.delete', data, [self.PARAM_TIMESTAMP])
 		
 		timestamp = self.get_timestamp(data)
@@ -102,7 +102,7 @@ class PumpedMilk:
 		finally:
 			conn.close()
 	
-	def get_timestamp(self, data, optional=False):
+	def get_timestamp(self, data:dict, optional:bool=False) -> datetime:
 		if optional and self.PARAM_TIMESTAMP not in data:
 			return None
 		
@@ -117,7 +117,7 @@ class PumpedMilk:
 			raise IllegalArgumentError('timestamp is required')
 		
 		try:
-			return datetime.strptime(timestamp, self.ISO_8601)
+			return date_utils.datetime_from_timestamp(timestamp, date_utils.ISO_8601)
 		except ValueError:
 			print(timestamp)
 			raise IllegalArgumentError('invalid timestamp format')

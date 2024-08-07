@@ -1,7 +1,8 @@
 from flask import Blueprint, flash, render_template, request
-from boobjuice.persistence import PumpedMilk, DataAccessError, IllegalArgumentError
 
 import logging
+
+from boobjuice.persistence import PumpedMilk, DataAccessError, IllegalArgumentError
 
 views = Blueprint('views', __name__)
 

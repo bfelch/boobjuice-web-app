@@ -1,8 +1,11 @@
 import pytest
 
 from datetime import datetime
+
 from tests.persistence.utils import Connection
+
 from boobjuice.persistence import PumpedMilk, DataAccessError, IllegalArgumentError
+from boobjuice.utils import ISO_STD, ISO_8601
 
 def mock_init(mocker):
 	mocker.patch('boobjuice.persistence.pumpedmilk.PumpedMilk.__init__', return_value=None)
@@ -52,7 +55,7 @@ def test_get_success(mocker):
 		assert len(pumped_list) == 1
 
 		pumped_dict = pumped_list[0]
-		assert pumped_dict[pumpedMilk.PARAM_TIMESTAMP] == pumped_tuple[0].strftime(pumpedMilk.ISO_STD)
+		assert pumped_dict[pumpedMilk.PARAM_TIMESTAMP] == pumped_tuple[0].strftime(ISO_STD)
 		assert pumped_dict[pumpedMilk.PARAM_MASS] == pumped_tuple[1]
 		assert pumped_dict[pumpedMilk.PARAM_DURATION] == pumped_tuple[2]
 	except DataAccessError:
@@ -290,7 +293,7 @@ def test_get_timestamp_success(mocker):
 	assert timestamp is not None
 
 def pumped_milk_tuple(timestamp, mass, duration):
-	return (datetime.strptime(timestamp, PumpedMilk.ISO_8601), mass, duration)
+	return (datetime.strptime(timestamp, ISO_8601), mass, duration)
 
 def pumped_milk_dict(timestamp, mass, duration):
 	return {'timestamp':timestamp, 'mass':mass, 'duration':duration}

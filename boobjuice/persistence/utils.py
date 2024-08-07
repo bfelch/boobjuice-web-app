@@ -1,7 +1,9 @@
-import os
 import mariadb
 
-def get_connection():
+import os
+from typing import Optional
+
+def get_connection() -> mariadb.Connection:
 	database = os.environ['MARIA_DATABASE']
 	username = os.environ['MARIA_USERNAME']
 	password = os.environ['MARIA_PASSWORD']
@@ -22,11 +24,11 @@ def get_connection():
 
 	return conn
 
-def get_query(filename):
+def get_query(filename:str) -> str:
 	dir = os.path.dirname(__file__)
 	return open(os.path.join(dir, 'queries', filename), 'r').read()
 
-def validate_data(method, data, params=[]):
+def validate_data(method:str, data:Optional[dict], params:list[str]=[]) -> None:
 	if data is None:
 		raise IllegalArgumentError(f'object is invalid for {method}')
 	
