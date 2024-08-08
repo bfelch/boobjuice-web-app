@@ -1,5 +1,5 @@
 let boobjuiceClient = {};
-boobjuiceClient.URL = '/record';
+boobjuiceClient.URL = '/record/pumped-milk';
 
 boobjuiceClient.insert = function(data) {
 	this._validateData(data);

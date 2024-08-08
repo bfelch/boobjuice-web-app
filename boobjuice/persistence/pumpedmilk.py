@@ -11,6 +11,7 @@ class PumpedMilk:
 	PARAM_TIMESTAMP = 'timestamp'
 	PARAM_MASS = 'mass'
 	PARAM_DURATION = 'duration'
+	PARAM_PROFILE = 'profile'
 
 	def __init__(self) -> None:
 		conn = get_connection()
@@ -34,9 +35,9 @@ class PumpedMilk:
 
 			cur = conn.cursor()
 			cur.execute(query)
-			for (timestamp, mass, duration) in cur:
-				timestamp = date_utils.timestamp_from_datetime(timestamp, date_utils.ISO_8601)
-				results.append({'timestamp':timestamp, 'mass':mass, 'duration':duration})
+			for (timestamp, mass, duration, profile) in cur:
+				timestamp = date_utils.timestamp_from_datetime(timestamp, date_utils.ISO_STD)
+				results.append({'timestamp':timestamp, 'mass':mass, 'duration':duration, 'profile':profile})
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error selecting from database: {e}')
 		finally:
@@ -50,6 +51,7 @@ class PumpedMilk:
 		timestamp = self.get_timestamp(data, optional=True)
 		mass = data.get(self.PARAM_MASS)
 		duration = data.get(self.PARAM_DURATION)
+		profile = data.get(self.PARAM_PROFILE)
 
 		if timestamp is None:
 			timestamp = date_utils.current_timestamp(date_utils.ISO_8601)
@@ -60,7 +62,7 @@ class PumpedMilk:
 			query = get_query('insert_pumped_milk.txt')
 
 			cur = conn.cursor()
-			cur.execute(query, (timestamp, mass, duration))
+			cur.execute(query, (timestamp, mass, duration, profile))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
@@ -72,6 +74,7 @@ class PumpedMilk:
 		timestamp = self.get_timestamp(data)
 		mass = data.get(self.PARAM_MASS)
 		duration = data.get(self.PARAM_DURATION)
+		profile = data.get(self.PARAM_PROFILE)
 		
 		conn = get_connection()
 
@@ -79,7 +82,7 @@ class PumpedMilk:
 			query = get_query('update_pumped_milk.txt')
 
 			cur = conn.cursor()
-			cur.execute(query, (mass, duration, timestamp))
+			cur.execute(query, (mass, duration, profile, timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error updating database: {e}')
 		finally:
@@ -116,8 +119,4 @@ class PumpedMilk:
 		except:
 			raise IllegalArgumentError('timestamp is required')
 		
-		try:
-			return date_utils.convert_timestamp(timestamp, date_utils.ISO_8601)
-		except ValueError:
-			print(timestamp)
-			raise IllegalArgumentError('invalid timestamp format')
+		return date_utils.convert_timestamp(timestamp, date_utils.ISO_8601)

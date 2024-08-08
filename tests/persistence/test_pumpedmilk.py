@@ -43,7 +43,7 @@ def test_get_db_error(mocker):
 		assert 'selecting' in e.message
 
 def test_get_success(mocker):
-	pumped_tuple = pumped_milk_tuple('2024-07-25T19:16', 200, 20)
+	pumped_tuple = pumped_milk_tuple('2024-07-25T19:16', 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker, iter_list=pumped_tuple)
@@ -55,14 +55,15 @@ def test_get_success(mocker):
 		assert len(pumped_list) == 1
 
 		pumped_dict = pumped_list[0]
-		assert pumped_dict[pumpedMilk.PARAM_TIMESTAMP] == pumped_tuple[0].strftime(ISO_8601)
+		assert pumped_dict[pumpedMilk.PARAM_TIMESTAMP] == pumped_tuple[0].strftime(ISO_STD)
 		assert pumped_dict[pumpedMilk.PARAM_MASS] == pumped_tuple[1]
 		assert pumped_dict[pumpedMilk.PARAM_DURATION] == pumped_tuple[2]
+		assert pumped_dict[pumpedMilk.PARAM_PROFILE] == pumped_tuple[3]
 	except DataAccessError:
 		pytest.fail('failed to get from database', pytrace=True)
 
 def test_insert_missing_mass(mocker):
-	pumped_dict = pumped_milk_dict(None, None, 20)
+	pumped_dict = pumped_milk_dict(None, None, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -76,7 +77,7 @@ def test_insert_missing_mass(mocker):
 		assert 'mass' in e.message
 
 def test_insert_missing_duration(mocker):
-	pumped_dict = pumped_milk_dict(None, 200, None)
+	pumped_dict = pumped_milk_dict(None, 200, None, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -90,7 +91,7 @@ def test_insert_missing_duration(mocker):
 		assert 'duration' in e.message
 
 def test_insert_db_error(mocker):
-	pumped_dict = pumped_milk_dict(None, 200, 20)
+	pumped_dict = pumped_milk_dict(None, 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker, error=True)
@@ -104,7 +105,7 @@ def test_insert_db_error(mocker):
 		assert 'inserting' in e.message
 
 def test_insert_success_no_timestamp(mocker):
-	pumped_dict = pumped_milk_dict(None, 200, 20)
+	pumped_dict = pumped_milk_dict(None, 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -114,11 +115,11 @@ def test_insert_success_no_timestamp(mocker):
 	try:
 		pumpedMilk.insert(pumped_dict)
 		assert True
-	except IllegalArgumentError as e:
+	except IllegalArgumentError:
 		pytest.fail('failed to insert to database', pytrace=True)
 
 def test_insert_success_with_timestamp(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -128,11 +129,11 @@ def test_insert_success_with_timestamp(mocker):
 	try:
 		pumpedMilk.insert(pumped_dict)
 		assert True
-	except IllegalArgumentError as e:
+	except IllegalArgumentError:
 		pytest.fail('failed to insert to database', pytrace=True)
 
 def test_update_missing_timestamp(mocker):
-	pumped_dict = pumped_milk_dict(None, 200, 20)
+	pumped_dict = pumped_milk_dict(None, 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -146,7 +147,7 @@ def test_update_missing_timestamp(mocker):
 		assert 'timestamp' in e.message
 
 def test_update_missing_mass(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', None, 20)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', None, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -160,7 +161,7 @@ def test_update_missing_mass(mocker):
 		assert 'mass' in e.message
 
 def test_update_missing_duration(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, None)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, None, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -174,7 +175,7 @@ def test_update_missing_duration(mocker):
 		assert 'duration' in e.message
 
 def test_update_db_error(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker, error=True)
@@ -188,7 +189,7 @@ def test_update_db_error(mocker):
 		assert 'updating' in e.message
 
 def test_update_success(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -202,7 +203,7 @@ def test_update_success(mocker):
 		pytest.fail('failed to update database', pytrace=True)
 
 def test_delete_missing_timestamp(mocker):
-	pumped_dict = pumped_milk_dict(None, 200, 20)
+	pumped_dict = pumped_milk_dict(None, 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -216,7 +217,7 @@ def test_delete_missing_timestamp(mocker):
 		assert 'timestamp' in e.message
 
 def test_delete_db_error(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker, error=True)
@@ -230,7 +231,7 @@ def test_delete_db_error(mocker):
 		assert 'deleting' in e.message
 
 def test_delete_success(mocker):
-	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20)
+	pumped_dict = pumped_milk_dict('2024-07-25T19:16', 200, 20, 2)
 
 	mock_init(mocker)
 	mock_connection(mocker)
@@ -292,8 +293,8 @@ def test_get_timestamp_success(mocker):
 	timestamp = pumpedMilk.get_timestamp({'timestamp':'2024-07-25T19:16'})
 	assert timestamp is not None
 
-def pumped_milk_tuple(timestamp, mass, duration):
-	return (datetime.strptime(timestamp, ISO_8601), mass, duration)
+def pumped_milk_tuple(timestamp, mass, duration, profile):
+	return (datetime.strptime(timestamp, ISO_8601), mass, duration, profile)
 
-def pumped_milk_dict(timestamp, mass, duration):
-	return {'timestamp':timestamp, 'mass':mass, 'duration':duration}
+def pumped_milk_dict(timestamp, mass, duration, profile):
+	return {'timestamp':timestamp, 'mass':mass, 'duration':duration, 'profile':profile}
