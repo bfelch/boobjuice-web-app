@@ -12,11 +12,11 @@ pumpedMilk = PumpedMilk()
 
 @views.route('/')
 def summary():
-	return render_template('summary.html', entries=json.dumps(pumpedMilk.get()))
+	return render_template('summary.html', entries=pumpedMilk.get())
 
 @views.route('/manage')
 def manage():
-	return render_template('manage.html', entries=json.dumps(pumpedMilk.get()))
+	return render_template('manage.html', entries=pumpedMilk.get())
 
 @views.route('/record/pumped-milk', methods=['PUT', 'POST', 'DELETE'])
 def record_pumped_milk():
