@@ -1,6 +1,7 @@
 import mariadb
 
-from datetime import datetime
+import logging
+import os
 
 from boobjuice.persistence.utils import get_connection, get_query, validate_data
 from boobjuice.persistence.utils import DataAccessError, IllegalArgumentError
@@ -17,10 +18,12 @@ class PumpedMilk:
 		conn = get_connection()
 
 		try:
-			query = get_query('create_pumped_milk.txt')
+			queries = get_query('create_pumped_milk.txt').split(os.linesep + os.linesep)
 
 			cur = conn.cursor()
-			cur.execute(query)
+			for query in queries:
+				logging.info(query)
+				cur.execute(query)
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error initializing table: {e}')
 		finally:
