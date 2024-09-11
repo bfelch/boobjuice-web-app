@@ -1,5 +1,7 @@
 # BoobJuice WebApp
 
+This application is intended to assist new parents with tracking how much breast milk they pump. It requires a way to host the application via docker (ie: unraid) as well as a MariaDB database. This setup assumes you know how to create, manage, and access docker containers.
+
 ## Setup
 ### Database
 
