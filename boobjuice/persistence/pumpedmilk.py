@@ -1,64 +1,35 @@
-from datetime import datetime
-
-import os
 import mariadb
 
-def get_connection():
-	database = os.environ['MARIA_DATABASE']
-	username = os.environ['MARIA_USERNAME']
-	password = os.environ['MARIA_PASSWORD']
-	host = os.environ['MARIA_HOST']
-	port = int(os.environ['MARIA_PORT'])
+import logging
+import os
 
-	try:
-		conn = mariadb.connect(
-			user=username,
-			password=password,
-			host=host,
-			port=port,
-			database=database,
-			autocommit=True
-		)
-	except mariadb.Error as e:
-		raise DataAccessError(f'Error connecting to MariaDB platform: {e}')
-
-	return conn
-
-def get_query(filename):
-	dir = os.path.dirname(__file__)
-	return open(os.path.join(dir, 'queries', filename), 'r').read()
-
-def validate_data(method, data, params=[]):
-	if data is None:
-		raise IllegalArgumentError(f'object is invalid for {method}')
-	
-	for param in params:
-		if data.get(param) is None:
-			raise IllegalArgumentError(f'{param} is invalid for {method}')
+from boobjuice.persistence.utils import get_connection, get_query, validate_data
+from boobjuice.persistence.utils import DataAccessError, IllegalArgumentError
+from boobjuice.utils import date_utils
 
 class PumpedMilk:
 
 	PARAM_TIMESTAMP = 'timestamp'
 	PARAM_MASS = 'mass'
 	PARAM_DURATION = 'duration'
+	PARAM_PROFILE = 'profile'
 
-	ISO_STD = '%Y-%m-%d %H:%M'
-	ISO_8601 = '%Y-%m-%dT%H:%M'
-
-	def __init__(self):
+	def __init__(self) -> None:
 		conn = get_connection()
 
 		try:
-			query = get_query('create_pumped_milk.txt')
+			queries = get_query('create_pumped_milk.txt').split(os.linesep + os.linesep)
 
 			cur = conn.cursor()
-			cur.execute(query)
+			for query in queries:
+				logging.info(query)
+				cur.execute(query)
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error initializing table: {e}')
 		finally:
 			conn.close()
 
-	def get(self):
+	def get(self) -> list[dict]:
 		conn = get_connection()
 		results = []
 
@@ -67,8 +38,9 @@ class PumpedMilk:
 
 			cur = conn.cursor()
 			cur.execute(query)
-			for (timestamp, mass, duration) in cur:
-				results.append({'timestamp':timestamp.strftime(self.ISO_STD), 'mass':mass, 'duration':duration})
+			for (timestamp, mass, duration, profile) in cur:
+				timestamp = date_utils.timestamp_from_datetime(timestamp, date_utils.ISO_STD)
+				results.append({'timestamp':timestamp, 'mass':mass, 'duration':duration, 'profile':profile})
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error selecting from database: {e}')
 		finally:
@@ -76,15 +48,16 @@ class PumpedMilk:
 
 		return results
 
-	def insert(self, data):
+	def insert(self, data:dict) -> None:
 		validate_data('pumped_milk.insert', data, [self.PARAM_MASS, self.PARAM_DURATION])
 
 		timestamp = self.get_timestamp(data, optional=True)
 		mass = data.get(self.PARAM_MASS)
 		duration = data.get(self.PARAM_DURATION)
+		profile = data.get(self.PARAM_PROFILE)
 
 		if timestamp is None:
-			timestamp = datetime.now().strftime(self.ISO_8601)
+			timestamp = date_utils.current_timestamp(date_utils.ISO_8601)
 		
 		conn = get_connection()
 
@@ -92,18 +65,19 @@ class PumpedMilk:
 			query = get_query('insert_pumped_milk.txt')
 
 			cur = conn.cursor()
-			cur.execute(query, (timestamp, mass, duration))
+			cur.execute(query, (timestamp, mass, duration, profile))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error inserting to database: {e}')
 		finally:
 			conn.close()
 
-	def update(self, data):
+	def update(self, data:dict) -> None:
 		validate_data('pumped_milk.update', data, [self.PARAM_TIMESTAMP, self.PARAM_MASS, self.PARAM_DURATION])
 
 		timestamp = self.get_timestamp(data)
 		mass = data.get(self.PARAM_MASS)
 		duration = data.get(self.PARAM_DURATION)
+		profile = data.get(self.PARAM_PROFILE)
 		
 		conn = get_connection()
 
@@ -111,13 +85,13 @@ class PumpedMilk:
 			query = get_query('update_pumped_milk.txt')
 
 			cur = conn.cursor()
-			cur.execute(query, (mass, duration, timestamp))
+			cur.execute(query, (mass, duration, profile, timestamp))
 		except mariadb.Error as e:
 			raise DataAccessError(f'Error updating database: {e}')
 		finally:
 			conn.close()
 
-	def delete(self, data):
+	def delete(self, data:dict) -> None:
 		validate_data('pumped_milk.delete', data, [self.PARAM_TIMESTAMP])
 		
 		timestamp = self.get_timestamp(data)
@@ -134,7 +108,7 @@ class PumpedMilk:
 		finally:
 			conn.close()
 	
-	def get_timestamp(self, data, optional=False):
+	def get_timestamp(self, data:dict, optional:bool=False) -> str:
 		if optional and self.PARAM_TIMESTAMP not in data:
 			return None
 		
@@ -148,17 +122,4 @@ class PumpedMilk:
 		except:
 			raise IllegalArgumentError('timestamp is required')
 		
-		try:
-			return datetime.strptime(timestamp, self.ISO_8601)
-		except ValueError:
-			print(timestamp)
-			raise IllegalArgumentError('invalid timestamp format')
-
-
-class DataAccessError(Exception):
-	def __init__(self, message='failed to connect to database'):
-		self.message = message
-
-class IllegalArgumentError(Exception):
-	def __init__(self, message='argument is not valid'):
-		self.message = message
+		return date_utils.convert_timestamp(timestamp, date_utils.ISO_8601)

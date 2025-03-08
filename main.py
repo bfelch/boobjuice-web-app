@@ -1,5 +1,6 @@
-from boobjuice import create_app
 import logging, sys
+
+from boobjuice import create_app
 
 app = create_app()
 

@@ -48,7 +48,7 @@
 </div>
 
 <script type="text/javascript">
-	summary.setEntries({{ entries|safe }});
+	summary.setEntries({{ entries|tojson|safe }});
 	summary.initPlotTypes();
 </script>
 {% endblock %}
